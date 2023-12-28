@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bopereg?useTimezone=true&serverTimezone=UTC
+    username: root
+    password: admin123
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      show-sql: false
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQLDialect
+springdoc:
+  pathsToMatch: /**/v1/**
+  swagger-ui:
+    use-root-path: true
