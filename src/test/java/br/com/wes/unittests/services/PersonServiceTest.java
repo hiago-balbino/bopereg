@@ -109,6 +109,20 @@ class PersonServiceTest {
     }
 
     @Test
+    public void shouldThrowExceptionWhenTryingUpdatePersonWithNonExistentObject() {
+        PersonVO personVOMock = input.mockVO(1);
+        when(personRepository.findById(personVOMock.getKey())).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            personService.update(personVOMock);
+        });
+
+        String expectedMessage = "No records found for this identifier!";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
     public void shouldDeletePersonWithSuccess() {
         Person personMock = input.mockEntity(1);
         when(personRepository.findById(personMock.getId())).thenReturn(Optional.of(personMock));

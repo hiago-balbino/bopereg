@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -24,8 +25,7 @@ public class Book implements Serializable {
     @Column(name = "price", nullable = false)
     private Double price;
     @Column(name = "launch_date", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date launchDate;
+    private LocalDate launchDate;
 
     public Book() {
     }
@@ -62,11 +62,11 @@ public class Book implements Serializable {
         this.price = price;
     }
 
-    public Date getLaunchDate() {
+    public LocalDate getLaunchDate() {
         return launchDate;
     }
 
-    public void setLaunchDate(Date launchDate) {
+    public void setLaunchDate(LocalDate launchDate) {
         this.launchDate = launchDate;
     }
 

@@ -20,7 +20,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Service
 public class PersonService {
 
-    private static final String NOT_FOUND_MSG = "No records found for this identifier!";
     private final Logger logger = Logger.getLogger(PersonService.class.getName());
     @Autowired
     private PersonRepository personRepository;
@@ -42,7 +41,7 @@ public class PersonService {
         if (Objects.isNull(person)) throw new RequiredObjectIsNullException();
 
         var personToUpdate = personRepository.findById(person.getKey())
-                .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_MSG));
+                .orElseThrow(ResourceNotFoundException::new);
         personToUpdate.setFirstName(person.getFirstName());
         personToUpdate.setLastName(person.getLastName());
         personToUpdate.setAddress(person.getAddress());
@@ -56,7 +55,7 @@ public class PersonService {
         logger.info("Deleting one person!");
 
         var personToDelete = personRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_MSG));
+                .orElseThrow(ResourceNotFoundException::new);
 
         personRepository.delete(personToDelete);
     }
@@ -65,7 +64,7 @@ public class PersonService {
         logger.info("Finding one person!");
 
         var person = personRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_MSG));
+                .orElseThrow(ResourceNotFoundException::new);
 
         return addPersonLinkAndReturn(mapper.map(person, PersonVO.class));
     }
