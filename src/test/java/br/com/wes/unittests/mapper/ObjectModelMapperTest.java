@@ -36,7 +36,7 @@ class ObjectModelMapperTest {
     }
 
     @Test
-    public void parseEntityToVO() {
+    public void mapEntityToValueObject() {
         Person personMock = input.mockEntity();
         PersonVO personVOMock = input.mockVO();
         when(modelMapper.map(personMock, PersonVO.class)).thenReturn(personVOMock);
@@ -51,7 +51,7 @@ class ObjectModelMapperTest {
     }
 
     @Test
-    public void parseEntitiesToVOs() {
+    public void mapEntitiesToValueObjects() {
         List<Person> peopleMock = input.mockEntities();
         List<PersonVO> peopleVOMock = input.mockVOs();
         when(modelMapper.map(peopleMock.get(0), PersonVO.class)).thenReturn(peopleVOMock.get(0));
@@ -83,7 +83,7 @@ class ObjectModelMapperTest {
     }
 
     @Test
-    public void parseVOToEntity() {
+    public void mapValueObjectToEntity() {
         PersonVO personVOMock = input.mockVO();
         Person personMock = input.mockEntity();
         when(modelMapper.map(personVOMock, Person.class)).thenReturn(personMock);
@@ -97,7 +97,7 @@ class ObjectModelMapperTest {
     }
 
     @Test
-    public void parseVOsToEntities() {
+    public void mapValueObjectsToEntities() {
         List<PersonVO> peopleVOMock = input.mockVOs();
         List<Person> peopleMock = input.mockEntities();
         when(modelMapper.map(peopleVOMock.get(0), Person.class)).thenReturn(peopleMock.get(0));
