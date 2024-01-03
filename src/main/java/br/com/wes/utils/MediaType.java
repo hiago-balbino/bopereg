@@ -1,4 +1,4 @@
-package br.com.wes.util;
+package br.com.wes.utils;
 
 public class MediaType {
 

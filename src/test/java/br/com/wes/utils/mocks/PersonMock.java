@@ -1,4 +1,4 @@
-package br.com.wes.unittests.mapper.mocks;
+package br.com.wes.utils.mocks;
 
 import br.com.wes.model.Person;
 import br.com.wes.vo.v1.PersonVO;

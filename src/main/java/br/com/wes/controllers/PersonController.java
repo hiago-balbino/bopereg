@@ -1,7 +1,7 @@
 package br.com.wes.controllers;
 
 import br.com.wes.services.PersonService;
-import br.com.wes.util.MediaType;
+import br.com.wes.utils.MediaType;
 import br.com.wes.vo.v1.PersonVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

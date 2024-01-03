@@ -6,7 +6,7 @@ import br.com.wes.mapper.ObjectModelMapper;
 import br.com.wes.model.Book;
 import br.com.wes.repositories.BookRepository;
 import br.com.wes.services.BookService;
-import br.com.wes.unittests.mapper.mocks.BookMock;
+import br.com.wes.utils.mocks.BookMock;
 import br.com.wes.vo.v1.BookVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

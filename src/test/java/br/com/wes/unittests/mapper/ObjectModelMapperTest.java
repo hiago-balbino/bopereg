@@ -2,7 +2,7 @@ package br.com.wes.unittests.mapper;
 
 import br.com.wes.mapper.ObjectModelMapper;
 import br.com.wes.model.Person;
-import br.com.wes.unittests.mapper.mocks.PersonMock;
+import br.com.wes.utils.mocks.PersonMock;
 import br.com.wes.vo.v1.PersonVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
