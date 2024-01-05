@@ -11,7 +11,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Map;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = AbstractIntegrationTest.Initializer.class)
 @Testcontainers
 public abstract class AbstractIntegrationTest {

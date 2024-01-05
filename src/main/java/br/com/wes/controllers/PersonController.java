@@ -36,6 +36,7 @@ public class PersonController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
+//    @CrossOrigin(origins = {"http://localhost:8080", "https://thewes.com.br"})
     @PostMapping(
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML},
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}
@@ -98,6 +99,7 @@ public class PersonController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
+//    @CrossOrigin(origins = "http://localhost:8080")
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
     public PersonVO findById(@PathVariable(value = "id") Long id) {
         return personService.findById(id);
