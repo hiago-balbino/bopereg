@@ -24,6 +24,8 @@
 		<spring-doc.version>2.3.0</spring-doc.version>
 		<testcontainers.version>1.19.3</testcontainers.version>
 		<rest-assured.version>5.4.0</rest-assured.version>
+		<!-- TODO update -->
+		<java-jwt.version>3.18.3</java-jwt.version>
 	</properties>
 
 	<dependencies>
@@ -49,6 +51,16 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>${java-jwt.version}</version>
 		</dependency>
 
 		<dependency>
