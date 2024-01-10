@@ -7,7 +7,6 @@ import br.com.wes.mapper.ObjectModelMapper;
 import br.com.wes.model.Person;
 import br.com.wes.repositories.PersonRepository;
 import br.com.wes.vo.v1.PersonVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +20,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class PersonService {
 
     private final Logger logger = Logger.getLogger(PersonService.class.getName());
-    @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private ObjectModelMapper mapper;
+    private final PersonRepository personRepository;
+    private final ObjectModelMapper mapper;
+
+    public PersonService(PersonRepository personRepository, ObjectModelMapper mapper) {
+        this.personRepository = personRepository;
+        this.mapper = mapper;
+    }
 
     public PersonVO create(PersonVO person) {
         logger.info("Creating one person!");

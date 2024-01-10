@@ -10,11 +10,9 @@ import br.com.wes.utils.mocks.BookMock;
 import br.com.wes.vo.v1.BookVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
@@ -24,7 +22,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
 
@@ -40,7 +37,6 @@ class BookServiceTest {
     @BeforeEach
     void setUp() {
         input = new BookMock();
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -60,7 +56,7 @@ class BookServiceTest {
         assertNotNull(bookVO);
         assertNotNull(bookVO.getKey());
         assertNotNull(bookVO.getLinks());
-        assertTrue(bookVO.toString().contains("</book/v1/1>;rel=\"self\""));
+        assertTrue(bookVO.toString().contains("</api/book/v1/1>;rel=\"self\""));
         assertEquals("Author1", bookVO.getAuthor());
         assertEquals("Title1", bookVO.getTitle());
         assertEquals(2L, bookVO.getPrice());
@@ -91,7 +87,7 @@ class BookServiceTest {
         assertNotNull(bookVO);
         assertNotNull(bookVO.getKey());
         assertNotNull(bookVO.getLinks());
-        assertTrue(bookVO.toString().contains("</book/v1/1>;rel=\"self\""));
+        assertTrue(bookVO.toString().contains("</api/book/v1/1>;rel=\"self\""));
         assertEquals("Author1", bookVO.getAuthor());
         assertEquals("Title1", bookVO.getTitle());
         assertEquals(2L, bookVO.getPrice());
@@ -159,7 +155,7 @@ class BookServiceTest {
         assertNotNull(bookVO);
         assertNotNull(bookVO.getKey());
         assertNotNull(bookVO.getLinks());
-        assertTrue(bookVO.toString().contains("</book/v1/2>;rel=\"self\""));
+        assertTrue(bookVO.toString().contains("</api/book/v1/2>;rel=\"self\""));
         assertEquals("Author2", bookVO.getAuthor());
         assertEquals("Title2", bookVO.getTitle());
         assertEquals(4L, bookVO.getPrice());
@@ -194,7 +190,7 @@ class BookServiceTest {
         assertNotNull(firstBook);
         assertNotNull(firstBook.getKey());
         assertNotNull(firstBook.getLinks());
-        assertTrue(firstBook.toString().contains("</book/v1/0>;rel=\"self\""));
+        assertTrue(firstBook.toString().contains("</api/book/v1/0>;rel=\"self\""));
         assertEquals("Author0", firstBook.getAuthor());
         assertEquals("Title0", firstBook.getTitle());
         assertEquals(0L, firstBook.getPrice());
@@ -204,7 +200,7 @@ class BookServiceTest {
         assertNotNull(secondBook);
         assertNotNull(secondBook.getKey());
         assertNotNull(secondBook.getLinks());
-        assertTrue(secondBook.toString().contains("</book/v1/1>;rel=\"self\""));
+        assertTrue(secondBook.toString().contains("</api/book/v1/1>;rel=\"self\""));
         assertEquals("Author1", secondBook.getAuthor());
         assertEquals("Title1", secondBook.getTitle());
         assertEquals(2L, secondBook.getPrice());
@@ -214,7 +210,7 @@ class BookServiceTest {
         assertNotNull(thirdBook);
         assertNotNull(thirdBook.getKey());
         assertNotNull(thirdBook.getLinks());
-        assertTrue(thirdBook.toString().contains("</book/v1/2>;rel=\"self\""));
+        assertTrue(thirdBook.toString().contains("</api/book/v1/2>;rel=\"self\""));
         assertEquals("Author2", thirdBook.getAuthor());
         assertEquals("Title2", thirdBook.getTitle());
         assertEquals(4L, thirdBook.getPrice());

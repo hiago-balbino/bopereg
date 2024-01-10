@@ -8,24 +8,27 @@ import br.com.wes.model.Book;
 import br.com.wes.repositories.BookRepository;
 import br.com.wes.vo.v1.BookVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class BookService {
 
     private final Logger logger = Logger.getLogger(BookService.class.getName());
 
-    @Autowired
-    private BookRepository bookRepository;
-    @Autowired
-    private ObjectModelMapper mapper;
+    private final BookRepository bookRepository;
+    private final ObjectModelMapper mapper;
+
+    public BookService(BookRepository bookRepository, ObjectModelMapper mapper) {
+        this.bookRepository = bookRepository;
+        this.mapper = mapper;
+    }
 
     public BookVO create(BookVO book) {
         logger.info("Creating a new book!");

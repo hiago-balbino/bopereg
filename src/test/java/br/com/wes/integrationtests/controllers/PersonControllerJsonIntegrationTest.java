@@ -35,14 +35,14 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
     void setUp() {
         specificationValidOrigin = new RequestSpecBuilder()
                 .setPort(TestConstants.SERVER_PORT)
-                .setBasePath("/person/v1")
+                .setBasePath("/api/person/v1")
                 .addHeader(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
         specificationInvalidOrigin = new RequestSpecBuilder()
                 .setPort(TestConstants.SERVER_PORT)
-                .setBasePath("/person/v1")
+                .setBasePath("/api/person/v1")
                 .addHeader(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))

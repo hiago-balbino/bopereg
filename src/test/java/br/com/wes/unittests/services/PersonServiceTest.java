@@ -10,11 +10,9 @@ import br.com.wes.utils.mocks.PersonMock;
 import br.com.wes.vo.v1.PersonVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
@@ -24,7 +22,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 class PersonServiceTest {
 
@@ -39,7 +36,6 @@ class PersonServiceTest {
     @BeforeEach
     public void setUp() {
         input = new PersonMock();
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -59,7 +55,7 @@ class PersonServiceTest {
         assertNotNull(personVO);
         assertNotNull(personVO.getKey());
         assertNotNull(personVO.getLinks());
-        assertTrue(personVO.toString().contains("</person/v1/1>;rel=\"self\""));
+        assertTrue(personVO.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("First Name Test1", personVO.getFirstName());
         assertEquals("Last Name Test1", personVO.getLastName());
         assertEquals("Female", personVO.getGender());
@@ -90,7 +86,7 @@ class PersonServiceTest {
         assertNotNull(personVO);
         assertNotNull(personVO.getKey());
         assertNotNull(personVO.getLinks());
-        assertTrue(personVO.toString().contains("</person/v1/1>;rel=\"self\""));
+        assertTrue(personVO.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("First Name Test1", personVO.getFirstName());
         assertEquals("Last Name Test1", personVO.getLastName());
         assertEquals("Female", personVO.getGender());
@@ -158,7 +154,7 @@ class PersonServiceTest {
         assertNotNull(person);
         assertNotNull(person.getKey());
         assertNotNull(person.getLinks());
-        assertTrue(person.toString().contains("</person/v1/1>;rel=\"self\""));
+        assertTrue(person.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("First Name Test1", person.getFirstName());
         assertEquals("Last Name Test1", person.getLastName());
         assertEquals("Female", person.getGender());
@@ -192,7 +188,7 @@ class PersonServiceTest {
         assertNotNull(firstPerson);
         assertNotNull(firstPerson.getKey());
         assertNotNull(firstPerson.getLinks());
-        assertTrue(people.toString().contains("</person/v1/0>;rel=\"self\""));
+        assertTrue(people.toString().contains("</api/person/v1/0>;rel=\"self\""));
         assertEquals("First Name Test0", firstPerson.getFirstName());
         assertEquals("Last Name Test0", firstPerson.getLastName());
         assertEquals("Male", firstPerson.getGender());
@@ -202,7 +198,7 @@ class PersonServiceTest {
         assertNotNull(secondPerson);
         assertNotNull(secondPerson.getKey());
         assertNotNull(secondPerson.getLinks());
-        assertTrue(people.toString().contains("</person/v1/1>;rel=\"self\""));
+        assertTrue(people.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("First Name Test1", secondPerson.getFirstName());
         assertEquals("Last Name Test1", secondPerson.getLastName());
         assertEquals("Female", secondPerson.getGender());
@@ -212,7 +208,7 @@ class PersonServiceTest {
         assertNotNull(thirdPerson);
         assertNotNull(thirdPerson.getKey());
         assertNotNull(thirdPerson.getLinks());
-        assertTrue(people.toString().contains("</person/v1/2>;rel=\"self\""));
+        assertTrue(people.toString().contains("</api/person/v1/2>;rel=\"self\""));
         assertEquals("First Name Test2", thirdPerson.getFirstName());
         assertEquals("Last Name Test2", thirdPerson.getLastName());
         assertEquals("Male", thirdPerson.getGender());
