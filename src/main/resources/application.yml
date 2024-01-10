@@ -20,6 +20,8 @@ spring:
 #      hibernate:
 #        dialect: org.hibernate.dialect.MySQLDialect
 springdoc:
-  pathsToMatch: /**/v1/**
+  pathsToMatch:
+    - /auth/**
+    - /**/v1/**
   swagger-ui:
     use-root-path: true
