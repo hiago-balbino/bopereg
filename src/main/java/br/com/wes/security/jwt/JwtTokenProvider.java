@@ -1,6 +1,6 @@
 package br.com.wes.security.jwt;
 
-import br.com.wes.exceptions.InvalidJwtAuthenticationException;
+import br.com.wes.exception.InvalidJwtAuthenticationException;
 import br.com.wes.vo.v1.security.TokenVO;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
