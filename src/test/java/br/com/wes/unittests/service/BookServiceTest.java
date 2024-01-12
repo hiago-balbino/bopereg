@@ -69,7 +69,7 @@ class BookServiceTest {
             bookService.create(null);
         });
 
-        String expectedMessage = "It is not allowed to persist a null object!";
+        String expectedMessage = "It is not allowed to persist a null object";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -100,7 +100,7 @@ class BookServiceTest {
             bookService.update(null);
         });
 
-        String expectedMessage = "It is not allowed to persist a null object!";
+        String expectedMessage = "It is not allowed to persist a null object";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -114,7 +114,7 @@ class BookServiceTest {
             bookService.update(bookVOMock);
         });
 
-        String expectedMessage = "No records found for this identifier!";
+        String expectedMessage = "No records found for this identifier";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -138,7 +138,7 @@ class BookServiceTest {
             bookService.delete(bookVOMock.getKey());
         });
 
-        String expectedMessage = "No records found for this identifier!";
+        String expectedMessage = "No records found for this identifier";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -171,7 +171,7 @@ class BookServiceTest {
             bookService.findById(bookVOMock.getKey());
         });
 
-        String expectedMessage = "No records found for this identifier!";
+        String expectedMessage = "No records found for this identifier";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }

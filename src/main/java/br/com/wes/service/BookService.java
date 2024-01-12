@@ -30,7 +30,7 @@ public class BookService {
     }
 
     public BookVO create(BookVO book) {
-        logger.info("Creating a new book!");
+        logger.info("Creating a new book");
         if (Objects.isNull(book)) throw new RequiredObjectIsNullException();
 
         var bookToSave = mapper.map(book, Book.class);
@@ -40,7 +40,7 @@ public class BookService {
     }
 
     public BookVO update(BookVO book) {
-        logger.info("Updating a book!");
+        logger.info("Updating a book");
         if (Objects.isNull(book)) throw new RequiredObjectIsNullException();
 
         var bookToUpdate = bookRepository.findById(book.getKey())
@@ -55,7 +55,7 @@ public class BookService {
     }
 
     public void delete(Long id) {
-        logger.info("Deleting a book!");
+        logger.info("Deleting a book");
 
         var bookToDelete = bookRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
@@ -64,7 +64,7 @@ public class BookService {
     }
 
     public BookVO findById(Long id) {
-        logger.info("Finding one book!");
+        logger.info("Finding one book");
 
         var book = bookRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
@@ -73,7 +73,7 @@ public class BookService {
     }
 
     public List<BookVO> findAll() {
-        logger.info("Finding all books!");
+        logger.info("Finding all books");
 
         var books = mapper.map(bookRepository.findAll(), BookVO.class);
         books.forEach(this::addBookLinkAndReturn);

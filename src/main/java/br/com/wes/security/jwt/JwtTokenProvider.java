@@ -121,7 +121,7 @@ public class JwtTokenProvider {
             return decodedToken(token)
                     .getExpiresAt().after(new Date());
         } catch (Exception e) {
-            throw new InvalidJwtAuthenticationException("Expired or invalid JWT Token!");
+            throw new InvalidJwtAuthenticationException("Expired or invalid JWT Token");
         }
     }
 }

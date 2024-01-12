@@ -29,7 +29,7 @@ public class PersonService {
     }
 
     public PersonVO create(PersonVO person) {
-        logger.info("Creating one person!");
+        logger.info("Creating one person");
         if (Objects.isNull(person)) throw new RequiredObjectIsNullException();
 
         var personToSave = mapper.map(person, Person.class);
@@ -39,7 +39,7 @@ public class PersonService {
     }
 
     public PersonVO update(PersonVO person) {
-        logger.info("Updating one person!");
+        logger.info("Updating one person");
         if (Objects.isNull(person)) throw new RequiredObjectIsNullException();
 
         var personToUpdate = personRepository.findById(person.getKey())
@@ -54,7 +54,7 @@ public class PersonService {
     }
 
     public void delete(Long id) {
-        logger.info("Deleting one person!");
+        logger.info("Deleting one person");
 
         var personToDelete = personRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
@@ -63,7 +63,7 @@ public class PersonService {
     }
 
     public PersonVO findById(Long id) {
-        logger.info("Finding one person!");
+        logger.info("Finding one person");
 
         var person = personRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
@@ -72,7 +72,7 @@ public class PersonService {
     }
 
     public List<PersonVO> findAll() {
-        logger.info("Finding all people!");
+        logger.info("Finding all people");
 
         List<Person> all = personRepository.findAll();
         var peopleVO = mapper.map(all, PersonVO.class);

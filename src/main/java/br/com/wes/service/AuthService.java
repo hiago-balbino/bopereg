@@ -12,10 +12,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.logging.Logger;
 
 @Service
 public class AuthService {
 
+    private static final Logger logger = Logger.getLogger(AuthService.class.getName());
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -28,6 +30,8 @@ public class AuthService {
     }
 
     public ResponseEntity<?> signin(AccountCredentialsVO credentials) {
+        logger.info("Authenticating user");
+
         try {
             var username = credentials.getUsername();
             var password = credentials.getPassword();
@@ -38,23 +42,25 @@ public class AuthService {
             if (Objects.nonNull(user)) {
                 tokenResponse = tokenProvider.createAccessToken(username, user.getRoles());
             } else {
-                throw new UsernameNotFoundException("Username " + username + " not found!");
+                throw new UsernameNotFoundException("Username " + username + " not found");
             }
 
             return ResponseEntity.ok(tokenResponse);
         } catch (Exception ex) {
-            throw new BadCredentialsException("Invalid username/password supplied!");
+            throw new BadCredentialsException("Invalid username/password supplied");
         }
     }
 
     public ResponseEntity<?> refreshToken(String username, String refreshToken) {
+        logger.info("Refreshing token");
+
         var tokenResponse = new TokenVO();
         var user = userRepository.findByUsername(username);
 
         if (Objects.nonNull(user)) {
             tokenResponse = tokenProvider.refreshToken(refreshToken);
         } else {
-            throw new UsernameNotFoundException("Username " + username + " not found!");
+            throw new UsernameNotFoundException("Username " + username + " not found");
         }
 
         return ResponseEntity.ok(tokenResponse);

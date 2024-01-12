@@ -22,13 +22,13 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info("Finding one user by name " + username + "!");
+        logger.info("Finding one user by name " + username);
 
         var user = userRepository.findByUsername(username);
         if (Objects.nonNull(user)) {
             return user;
         } else {
-            throw new UsernameNotFoundException("Username " + username + " not found!");
+            throw new UsernameNotFoundException("Username " + username + " not found");
         }
     }
 }

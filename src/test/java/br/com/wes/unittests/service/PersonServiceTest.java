@@ -68,7 +68,7 @@ class PersonServiceTest {
             personService.create(null);
         });
 
-        String expectedMessage = "It is not allowed to persist a null object!";
+        String expectedMessage = "It is not allowed to persist a null object";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -99,7 +99,7 @@ class PersonServiceTest {
             personService.update(null);
         });
 
-        String expectedMessage = "It is not allowed to persist a null object!";
+        String expectedMessage = "It is not allowed to persist a null object";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -113,7 +113,7 @@ class PersonServiceTest {
             personService.update(personVOMock);
         });
 
-        String expectedMessage = "No records found for this identifier!";
+        String expectedMessage = "No records found for this identifier";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -136,7 +136,7 @@ class PersonServiceTest {
             personService.delete(1L);
         });
 
-        String expectedMessage = "No records found for this identifier!";
+        String expectedMessage = "No records found for this identifier";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
@@ -169,7 +169,7 @@ class PersonServiceTest {
             personService.findById(1L);
         });
 
-        String expectedMessage = "No records found for this identifier!";
+        String expectedMessage = "No records found for this identifier";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
     }
