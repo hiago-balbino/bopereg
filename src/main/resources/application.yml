@@ -1,9 +1,9 @@
 cors:
-  originPatterns: http://localhost:3000,http://localhost:8080,https://thewes.com.br
+  originPatterns: ${CORS_ORIGINS}
 security:
   jwt:
     token:
-      secret-key: 53cr37
+      secret-key: ${JWT_SECRET}
       expire-length: 3600000
 spring:
   datasource:

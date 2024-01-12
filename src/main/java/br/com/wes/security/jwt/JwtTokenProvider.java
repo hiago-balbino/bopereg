@@ -1,5 +1,6 @@
 package br.com.wes.security.jwt;
 
+import br.com.wes.config.JwtSecurityConfigProperties;
 import br.com.wes.exception.InvalidJwtAuthenticationException;
 import br.com.wes.vo.v1.security.TokenVO;
 import com.auth0.jwt.JWT;
@@ -8,7 +9,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,27 +23,24 @@ import java.util.List;
 @Service
 public class JwtTokenProvider {
 
-    @Value("${security.jwt.token.secret-key:secret}")
-    private String secretKey;
-    @Value("${security.jwt.token.expire-length:3600000}")
-    private long validityInMilliseconds;
-
-    Algorithm algorithm = null;
+    private final JwtSecurityConfigProperties securityProperties;
     private final UserDetailsService userDetailsService;
+    Algorithm algorithm = null;
 
-    public JwtTokenProvider(UserDetailsService userDetailsService) {
+    public JwtTokenProvider(JwtSecurityConfigProperties securityProperties, UserDetailsService userDetailsService) {
+        this.securityProperties = securityProperties;
         this.userDetailsService = userDetailsService;
     }
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-        algorithm = Algorithm.HMAC256(secretKey.getBytes());
+        securityProperties.setSecretKey(Base64.getEncoder().encodeToString(securityProperties.getSecretKey().getBytes()));
+        algorithm = Algorithm.HMAC256(securityProperties.getSecretKey().getBytes());
     }
 
     public TokenVO createAccessToken(String username, List<String> roles) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + securityProperties.getExpireLength());
 
         String accessToken = getAccessToken(username, roles, now, validity);
         String refreshToken = getRefreshToken(username, roles, now);
@@ -85,7 +82,7 @@ public class JwtTokenProvider {
     }
 
     private String getRefreshToken(String username, List<String> roles, Date now) {
-        Date validityRefreshToken = new Date(now.getTime() + (validityInMilliseconds * 3)); // refresh token valid for 3 hours
+        Date validityRefreshToken = new Date(now.getTime() + (securityProperties.getExpireLength() * 3)); // refresh token valid for 3 hours
 
         return JWT.create()
                 .withClaim("roles", roles)
@@ -103,7 +100,7 @@ public class JwtTokenProvider {
     }
 
     private DecodedJWT decodedToken(String token) {
-        Algorithm alg = Algorithm.HMAC256(secretKey.getBytes());
+        Algorithm alg = Algorithm.HMAC256(securityProperties.getSecretKey().getBytes());
         JWTVerifier verifier = JWT.require(alg).build();
         return verifier.verify(token);
     }

@@ -7,6 +7,6 @@ public class TestConstants {
     public static final String HEADER_PARAM_AUTHORIZATION = "Authorization";
 
     public static final String CONTENT_TYPE_JSON = "application/json";
-    public static final String VALID_ORIGIN = "https://thewes.com.br";
+    public static final String VALID_ORIGIN = "http://localhost:8080";
     public static final String INVALID_ORIGIN = "https://invalid.com.br";
 }
