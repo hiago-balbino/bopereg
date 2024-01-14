@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class BookVOIntegrationTest implements Serializable {
+public class BookVOIT implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1976307716533323862L;
@@ -21,7 +21,7 @@ public class BookVOIntegrationTest implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate launchDate;
 
-    public BookVOIntegrationTest() {
+    public BookVOIT() {
     }
 
     public Long getId() {
@@ -68,7 +68,7 @@ public class BookVOIntegrationTest implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BookVOIntegrationTest that = (BookVOIntegrationTest) o;
+        BookVOIT that = (BookVOIT) o;
         return Objects.equals(id, that.id) && Objects.equals(author, that.author) && Objects.equals(title, that.title) && Objects.equals(price, that.price) && Objects.equals(launchDate, that.launchDate);
     }
 

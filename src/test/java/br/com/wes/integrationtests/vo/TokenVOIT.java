@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class TokenVOIntegrationTest implements Serializable {
+public class TokenVOIT implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -4312617395517231347L;
@@ -17,7 +17,7 @@ public class TokenVOIntegrationTest implements Serializable {
     private String accessToken;
     private String refreshToken;
 
-    public TokenVOIntegrationTest(String username, Boolean authenticated, Date created, Date expiration, String accessToken, String refreshToken) {
+    public TokenVOIT(String username, Boolean authenticated, Date created, Date expiration, String accessToken, String refreshToken) {
         this.username = username;
         this.authenticated = authenticated;
         this.created = created;
@@ -26,7 +26,7 @@ public class TokenVOIntegrationTest implements Serializable {
         this.refreshToken = refreshToken;
     }
 
-    public TokenVOIntegrationTest() {
+    public TokenVOIT() {
     }
 
     public String getUsername() {
@@ -81,8 +81,8 @@ public class TokenVOIntegrationTest implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TokenVOIntegrationTest tokenVOIntegrationTest = (TokenVOIntegrationTest) o;
-        return Objects.equals(username, tokenVOIntegrationTest.username) && Objects.equals(authenticated, tokenVOIntegrationTest.authenticated) && Objects.equals(created, tokenVOIntegrationTest.created) && Objects.equals(expiration, tokenVOIntegrationTest.expiration) && Objects.equals(accessToken, tokenVOIntegrationTest.accessToken) && Objects.equals(refreshToken, tokenVOIntegrationTest.refreshToken);
+        TokenVOIT tokenVOIT = (TokenVOIT) o;
+        return Objects.equals(username, tokenVOIT.username) && Objects.equals(authenticated, tokenVOIT.authenticated) && Objects.equals(created, tokenVOIT.created) && Objects.equals(expiration, tokenVOIT.expiration) && Objects.equals(accessToken, tokenVOIT.accessToken) && Objects.equals(refreshToken, tokenVOIT.refreshToken);
     }
 
     @Override

@@ -1,10 +1,10 @@
 package br.com.wes.integrationtests.controller;
 
-import br.com.wes.integrationtests.AbstractIntegrationTest;
+import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
-import br.com.wes.integrationtests.vo.AccountCredentialsVOIntegrationTest;
-import br.com.wes.integrationtests.vo.PersonVOIntegrationTest;
-import br.com.wes.integrationtests.vo.TokenVOIntegrationTest;
+import br.com.wes.integrationtests.vo.AccountCredentialsVOIT;
+import br.com.wes.integrationtests.vo.PersonVOIT;
+import br.com.wes.integrationtests.vo.TokenVOIT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest {
+public class PersonControllerJsonIT extends AbstractIT {
 
     private static RequestSpecification specification;
 
@@ -43,7 +43,7 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
     public void shouldAuthorizeUserToPerformPersonRequestsOnTests() {
         var username = System.getenv("USERNAME");
         var password = System.getenv("PASSWORD");
-        var credentials = new AccountCredentialsVOIntegrationTest(username, password);
+        var credentials = new AccountCredentialsVOIT(username, password);
 
         var accessToken = given()
                 .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
@@ -51,7 +51,7 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
                 .body(credentials)
                 .when().post()
                 .then().statusCode(HttpStatus.OK.value())
-                .extract().body().as(TokenVOIntegrationTest.class)
+                .extract().body().as(TokenVOIT.class)
                 .getAccessToken();
 
         specification = new RequestSpecBuilder()
@@ -74,7 +74,7 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        PersonVOIntegrationTest personPersisted = mapper.readValue(contentBody, PersonVOIntegrationTest.class);
+        PersonVOIT personPersisted = mapper.readValue(contentBody, PersonVOIT.class);
 
         assertNotNull(personPersisted);
         assertNotNull(personPersisted.getId());
@@ -115,10 +115,10 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        List<PersonVOIntegrationTest> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
         assertFalse(people.isEmpty());
 
-        PersonVOIntegrationTest personToFetch = people.get(0);
+        PersonVOIT personToFetch = people.get(0);
         var contentBodyFindById = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
@@ -127,7 +127,7 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        PersonVOIntegrationTest personPersisted = mapper.readValue(contentBodyFindById, PersonVOIntegrationTest.class);
+        PersonVOIT personPersisted = mapper.readValue(contentBodyFindById, PersonVOIT.class);
         assertNotNull(personPersisted);
         assertNotNull(personPersisted.getId());
         assertNotNull(personPersisted.getFirstName());
@@ -161,10 +161,10 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
-        List<PersonVOIntegrationTest> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
         assertFalse(people.isEmpty());
 
-        PersonVOIntegrationTest personToDelete = people.get(0);
+        PersonVOIT personToDelete = people.get(0);
         given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
@@ -194,8 +194,8 @@ public class PersonControllerJsonIntegrationTest extends AbstractIntegrationTest
         assertEquals("Invalid CORS request", contentBody);
     }
 
-    private PersonVOIntegrationTest mockPersonVOIntegrationTest() {
-        PersonVOIntegrationTest person = new PersonVOIntegrationTest();
+    private PersonVOIT mockPersonVOIntegrationTest() {
+        PersonVOIT person = new PersonVOIT();
         person.setFirstName("Wes");
         person.setLastName("B.");
         person.setGender("Male");

@@ -4,7 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class AccountCredentialsVOIntegrationTest implements Serializable {
+public class AccountCredentialsVOIT implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -4025805358532622880L;
@@ -12,7 +12,7 @@ public class AccountCredentialsVOIntegrationTest implements Serializable {
     private String username;
     private String password;
 
-    public AccountCredentialsVOIntegrationTest(String username, String password) {
+    public AccountCredentialsVOIT(String username, String password) {
         this.username = username;
         this.password = password;
     }
@@ -37,7 +37,7 @@ public class AccountCredentialsVOIntegrationTest implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AccountCredentialsVOIntegrationTest that = (AccountCredentialsVOIntegrationTest) o;
+        AccountCredentialsVOIT that = (AccountCredentialsVOIT) o;
         return Objects.equals(username, that.username) && Objects.equals(password, that.password);
     }
 

@@ -1,4 +1,4 @@
-package br.com.wes.unittests.service;
+package br.com.wes.service;
 
 import br.com.wes.exception.RequiredObjectIsNullException;
 import br.com.wes.exception.ResourceNotFoundException;

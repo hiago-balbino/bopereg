@@ -1,10 +1,10 @@
 package br.com.wes.integrationtests.controller;
 
-import br.com.wes.integrationtests.AbstractIntegrationTest;
+import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
-import br.com.wes.integrationtests.vo.AccountCredentialsVOIntegrationTest;
-import br.com.wes.integrationtests.vo.BookVOIntegrationTest;
-import br.com.wes.integrationtests.vo.TokenVOIntegrationTest;
+import br.com.wes.integrationtests.vo.AccountCredentialsVOIT;
+import br.com.wes.integrationtests.vo.BookVOIT;
+import br.com.wes.integrationtests.vo.TokenVOIT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
+public class BookControllerJsonIT extends AbstractIT {
 
     private static RequestSpecification specification;
 
@@ -45,7 +45,7 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
     public void shouldAuthorizeUserToPerformPersonRequestsOnTests() {
         var username = System.getenv("USERNAME");
         var password = System.getenv("PASSWORD");
-        var credentials = new AccountCredentialsVOIntegrationTest(username, password);
+        var credentials = new AccountCredentialsVOIT(username, password);
 
         var accessToken = given()
                 .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
@@ -53,7 +53,7 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
                 .body(credentials)
                 .when().post()
                 .then().statusCode(HttpStatus.OK.value())
-                .extract().body().as(TokenVOIntegrationTest.class)
+                .extract().body().as(TokenVOIT.class)
                 .getAccessToken();
 
         specification = new RequestSpecBuilder()
@@ -76,7 +76,7 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        BookVOIntegrationTest bookPersisted = mapper.readValue(contentBody, BookVOIntegrationTest.class);
+        BookVOIT bookPersisted = mapper.readValue(contentBody, BookVOIT.class);
 
         assertNotNull(bookPersisted);
         assertNotNull(bookPersisted.getId());
@@ -117,11 +117,11 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        List<BookVOIntegrationTest> books = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
+        List<BookVOIT> books = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
         });
         assertFalse(books.isEmpty());
 
-        BookVOIntegrationTest bookToFetch = books.get(0);
+        BookVOIT bookToFetch = books.get(0);
         var contentBodyFindById = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
                 .pathParam("id", bookToFetch.getId())
@@ -129,7 +129,7 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        BookVOIntegrationTest bookPersisted = mapper.readValue(contentBodyFindById, BookVOIntegrationTest.class);
+        BookVOIT bookPersisted = mapper.readValue(contentBodyFindById, BookVOIT.class);
         assertNotNull(bookPersisted);
         assertNotNull(bookPersisted.getId());
         assertNotNull(bookPersisted.getAuthor());
@@ -163,11 +163,11 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
-        List<BookVOIntegrationTest> books = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
+        List<BookVOIT> books = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
         });
         assertFalse(books.isEmpty());
 
-        BookVOIntegrationTest bookToDelete = books.get(0);
+        BookVOIT bookToDelete = books.get(0);
         given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
@@ -197,8 +197,8 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
         assertEquals("Invalid CORS request", contentBody);
     }
 
-    private BookVOIntegrationTest mockBookVOIntegrationTest() {
-        BookVOIntegrationTest book = new BookVOIntegrationTest();
+    private BookVOIT mockBookVOIntegrationTest() {
+        BookVOIT book = new BookVOIT();
         book.setAuthor("Wes");
         book.setTitle("The Life of Wes");
         book.setPrice(100.00);

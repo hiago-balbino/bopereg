@@ -1,6 +1,6 @@
 package br.com.wes.integrationtests.repository;
 
-import br.com.wes.integrationtests.AbstractIntegrationTest;
+import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.repository.PersonRepository;
 import br.com.wes.util.mock.PersonMock;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
-public class PersonRepositoryIntegrationTest extends AbstractIntegrationTest {
+public class PersonRepositoryIT extends AbstractIT {
 
     private PersonMock input;
 

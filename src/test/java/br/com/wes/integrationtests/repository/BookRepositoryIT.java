@@ -1,6 +1,6 @@
 package br.com.wes.integrationtests.repository;
 
-import br.com.wes.integrationtests.AbstractIntegrationTest;
+import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.repository.BookRepository;
 import br.com.wes.util.mock.BookMock;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
-public class BookRepositoryIntegrationTest extends AbstractIntegrationTest {
+public class BookRepositoryIT extends AbstractIT {
 
     private BookMock input;
 

@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class PersonVOIntegrationTest implements Serializable {
+public class PersonVOIT implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 3111488046181860539L;
@@ -19,7 +19,7 @@ public class PersonVOIntegrationTest implements Serializable {
     private String address;
     private String gender;
 
-    public PersonVOIntegrationTest() {
+    public PersonVOIT() {
     }
 
     public Long getId() {
@@ -66,8 +66,8 @@ public class PersonVOIntegrationTest implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersonVOIntegrationTest personVOIntegrationTest = (PersonVOIntegrationTest) o;
-        return Objects.equals(id, personVOIntegrationTest.id) && Objects.equals(firstName, personVOIntegrationTest.firstName) && Objects.equals(lastName, personVOIntegrationTest.lastName) && Objects.equals(address, personVOIntegrationTest.address) && Objects.equals(gender, personVOIntegrationTest.gender);
+        PersonVOIT personVOIT = (PersonVOIT) o;
+        return Objects.equals(id, personVOIT.id) && Objects.equals(firstName, personVOIT.firstName) && Objects.equals(lastName, personVOIT.lastName) && Objects.equals(address, personVOIT.address) && Objects.equals(gender, personVOIT.gender);
     }
 
     @Override

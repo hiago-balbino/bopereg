@@ -1,6 +1,5 @@
 package br.com.wes.integrationtests;
 
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -11,9 +10,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Map;
 
-@ContextConfiguration(initializers = AbstractIntegrationTest.Initializer.class)
+@ContextConfiguration(initializers = AbstractIT.Initializer.class)
 @Testcontainers
-public abstract class AbstractIntegrationTest {
+public abstract class AbstractIT {
     private static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.2.0");
 
     static {

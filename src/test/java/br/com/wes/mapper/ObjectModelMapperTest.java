@@ -1,4 +1,4 @@
-package br.com.wes.unittests.mapper;
+package br.com.wes.mapper;
 
 import br.com.wes.mapper.ObjectModelMapper;
 import br.com.wes.model.Person;
