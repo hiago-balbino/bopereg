@@ -2,7 +2,9 @@ package br.com.wes.integrationtests.controller;
 
 import br.com.wes.integrationtests.AbstractIntegrationTest;
 import br.com.wes.integrationtests.TestConstants;
+import br.com.wes.integrationtests.vo.AccountCredentialsVOIntegrationTest;
 import br.com.wes.integrationtests.vo.BookVOIntegrationTest;
+import br.com.wes.integrationtests.vo.TokenVOIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -28,37 +30,47 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
 
-    private RequestSpecification specificationValidOrigin;
-    private RequestSpecification specificationInvalidOrigin;
+    private static RequestSpecification specification;
+
     @Autowired
     private ObjectMapper mapper;
 
     @BeforeEach
     void setUp() {
-        specificationValidOrigin = new RequestSpecBuilder()
-                .setPort(TestConstants.SERVER_PORT)
-                .setBasePath("/api/book/v1")
-                .addHeader(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-        specificationInvalidOrigin = new RequestSpecBuilder()
-                .setPort(TestConstants.SERVER_PORT)
-                .setBasePath("/api/book/v1")
-                .addHeader(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    }
+
+    @Test
+    @Order(0)
+    public void shouldAuthorizeUserToPerformPersonRequestsOnTests() {
+        var username = System.getenv("USERNAME");
+        var password = System.getenv("PASSWORD");
+        var credentials = new AccountCredentialsVOIntegrationTest(username, password);
+
+        var accessToken = given()
+                .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
+                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .body(credentials)
+                .when().post()
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(TokenVOIntegrationTest.class)
+                .getAccessToken();
+
+        specification = new RequestSpecBuilder()
+                .setPort(TestConstants.SERVER_PORT).setBasePath("/api/book/v1")
+                .addHeader(TestConstants.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
     }
 
     @Test
     @Order(1)
     public void shouldPerformPostRequestToBookWithSuccess() throws JsonProcessingException {
         var book = mockBookVOIntegrationTest();
-        var contentBody = given().spec(specificationValidOrigin)
+        var contentBody = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .body(book)
                 .when().post()
                 .then().statusCode(HttpStatus.OK.value())
@@ -83,8 +95,9 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
     @Order(2)
     public void shouldReturnInvalidCorsWhenPerformingPostToBookWithInvalidOrigin() {
         var book = mockBookVOIntegrationTest();
-        var contentBody = given().spec(specificationInvalidOrigin)
+        var contentBody = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .body(book)
                 .when().post()
                 .then().statusCode(HttpStatus.FORBIDDEN.value())
@@ -97,8 +110,9 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(3)
     public void shouldPerformGetRequestToFindBookWithSuccess() throws JsonProcessingException {
-        var contentBodyFindAll = given().spec(specificationValidOrigin)
+        var contentBodyFindAll = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
@@ -108,7 +122,7 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
         assertFalse(books.isEmpty());
 
         BookVOIntegrationTest bookToFetch = books.get(0);
-        var contentBodyFindById = given().spec(specificationValidOrigin)
+        var contentBodyFindById = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
                 .pathParam("id", bookToFetch.getId())
                 .when().get("{id}")
@@ -128,8 +142,9 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(4)
     public void shouldReturnInvalidCorsWhenPerformingGetToFindBookWithInvalidOrigin() {
-        var contentBody = given().spec(specificationInvalidOrigin)
+        var contentBody = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .pathParam("id", 1)
                 .when().get("{id}")
                 .then().statusCode(HttpStatus.FORBIDDEN.value())
@@ -142,8 +157,9 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(5)
     public void shouldPerformDeleteRequestToRemoveBookWithSuccess() throws JsonProcessingException {
-        var contentBodyFindAll = given().spec(specificationValidOrigin)
+        var contentBodyFindAll = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
@@ -152,13 +168,15 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
         assertFalse(books.isEmpty());
 
         BookVOIntegrationTest bookToDelete = books.get(0);
-        given().spec(specificationValidOrigin)
+        given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .pathParam("id", bookToDelete.getId())
                 .when().delete("{id}")
                 .then().statusCode(HttpStatus.NO_CONTENT.value());
-        given().spec(specificationValidOrigin)
+        given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .pathParam("id", bookToDelete.getId())
                 .when().get("{id}")
                 .then().statusCode(HttpStatus.NOT_FOUND.value());
@@ -167,8 +185,9 @@ public class BookControllerJsonIntegrationTest extends AbstractIntegrationTest {
     @Test
     @Order(6)
     public void shouldReturnInvalidCorsWhenPerformingDeleteToRemoveBookWithInvalidOrigin() {
-        var contentBody = given().spec(specificationInvalidOrigin)
+        var contentBody = given().spec(specification)
                 .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .pathParam("id", 1)
                 .when().delete("{id}")
                 .then().statusCode(HttpStatus.FORBIDDEN.value())
