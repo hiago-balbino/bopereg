@@ -1,7 +1,6 @@
 package br.com.wes.controller;
 
 import br.com.wes.service.PersonService;
-import br.com.wes.util.MediaType;
 import br.com.wes.vo.v1.PersonVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -9,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +40,8 @@ public class PersonController {
     )
 //    @CrossOrigin(origins = {"http://localhost:8080", "https://thewes.com.br"})
     @PostMapping(
-            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML},
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE}
     )
     public PersonVO create(@RequestBody PersonVO person) {
         return personService.create(person);
@@ -62,8 +62,8 @@ public class PersonController {
             }
     )
     @PutMapping(
-            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML},
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE}
     )
     public PersonVO update(@RequestBody PersonVO person) {
         return personService.update(person);
@@ -102,7 +102,7 @@ public class PersonController {
             }
     )
 //    @CrossOrigin(origins = "http://localhost:8080")
-    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public PersonVO findById(@PathVariable(value = "id") Long id) {
         return personService.findById(id);
     }
@@ -124,7 +124,7 @@ public class PersonController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-    @GetMapping(produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PersonVO> findAll() {
         return personService.findAll();
     }

@@ -1,7 +1,6 @@
 package br.com.wes.controller;
 
 import br.com.wes.service.BookService;
-import br.com.wes.util.MediaType;
 import br.com.wes.vo.v1.BookVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -9,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +39,8 @@ public class BookController {
             }
     )
     @PostMapping(
-            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML},
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE}
     )
     public BookVO create(@RequestBody BookVO book) {
         return bookService.create(book);
@@ -61,8 +61,8 @@ public class BookController {
             }
     )
     @PutMapping(
-            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML},
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE}
     )
     public BookVO update(@RequestBody BookVO book) {
         return bookService.update(book);
@@ -100,7 +100,7 @@ public class BookController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public BookVO findById(@PathVariable(value = "id") Long id) {
         return bookService.findById(id);
     }
@@ -121,7 +121,7 @@ public class BookController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-    @GetMapping(produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<BookVO> findAll() {
         return bookService.findAll();
     }
