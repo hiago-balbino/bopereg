@@ -2,7 +2,7 @@ package br.com.wes.integrationtests.controller;
 
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
-import br.com.wes.integrationtests.vo.AccountCredentialsVOIT;
+import br.com.wes.vo.v1.security.AccountCredentialsVO;
 import br.com.wes.vo.v1.security.TokenVO;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -20,11 +20,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class AuthControllerIT extends AbstractIT {
 
     @Test
+    @Order(0)
+    public void shouldReturnForbiddenWhenUserNotAuthorizedToSignin() {
+        var credentials = new AccountCredentialsVO();
+
+        given()
+                .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(credentials)
+                .when().post()
+                .then().statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     @Order(1)
     public void shouldSigninUserWithSuccess() {
         var username = System.getenv("USERNAME");
         var password = System.getenv("PASSWORD");
-        var credentials = new AccountCredentialsVOIT(username, password);
+        var credentials = new AccountCredentialsVO(username, password);
 
         var tokenVO = given()
                 .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
@@ -43,7 +56,7 @@ public class AuthControllerIT extends AbstractIT {
     public void shouldRefreshUserTokenWithSuccess() {
         var username = System.getenv("USERNAME");
         var password = System.getenv("PASSWORD");
-        var credentials = new AccountCredentialsVOIT(username, password);
+        var credentials = new AccountCredentialsVO(username, password);
 
         var tokenVO = given()
                 .port(TestConstants.SERVER_PORT).basePath("/auth/signin")

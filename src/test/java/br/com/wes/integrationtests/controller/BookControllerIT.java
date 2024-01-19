@@ -2,8 +2,8 @@ package br.com.wes.integrationtests.controller;
 
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
-import br.com.wes.integrationtests.vo.AccountCredentialsVOIT;
 import br.com.wes.integrationtests.vo.BookVOIT;
+import br.com.wes.vo.v1.security.AccountCredentialsVO;
 import br.com.wes.vo.v1.security.TokenVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,10 +43,26 @@ public class BookControllerIT extends AbstractIT {
 
     @Test
     @Order(0)
+    public void shouldReturnForbiddenWhenTryToPerformBookRequestAndUserNotAuthorized() {
+        var specificationWithoutToken = new RequestSpecBuilder()
+                .setPort(TestConstants.SERVER_PORT).setBasePath("/api/book/v1")
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        given()
+                .spec(specificationWithoutToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get()
+                .then().statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    @Order(1)
     public void shouldAuthorizeUserToPerformPersonRequestsOnTests() {
         var username = System.getenv("USERNAME");
         var password = System.getenv("PASSWORD");
-        var credentials = new AccountCredentialsVOIT(username, password);
+        var credentials = new AccountCredentialsVO(username, password);
 
         var accessToken = given()
                 .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
@@ -66,7 +82,7 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     public void shouldPerformPostRequestToBookWithSuccess() throws JsonProcessingException {
         var book = mockBookVOIntegrationTest();
         var contentBody = given().spec(specification)
@@ -93,7 +109,7 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void shouldReturnInvalidCorsWhenPerformingPostToBookWithInvalidOrigin() {
         var book = mockBookVOIntegrationTest();
         var contentBody = given().spec(specification)
@@ -109,7 +125,7 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void shouldPerformGetRequestToFindBookWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -141,7 +157,7 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void shouldReturnInvalidCorsWhenPerformingGetToFindBookWithInvalidOrigin() {
         var contentBody = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -156,7 +172,7 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void shouldPerformDeleteRequestToRemoveBookWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -184,7 +200,7 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void shouldReturnInvalidCorsWhenPerformingDeleteToRemoveBookWithInvalidOrigin() {
         var contentBody = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

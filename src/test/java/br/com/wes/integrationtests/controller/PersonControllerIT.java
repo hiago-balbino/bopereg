@@ -2,8 +2,8 @@ package br.com.wes.integrationtests.controller;
 
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
-import br.com.wes.integrationtests.vo.AccountCredentialsVOIT;
 import br.com.wes.integrationtests.vo.PersonVOIT;
+import br.com.wes.vo.v1.security.AccountCredentialsVO;
 import br.com.wes.vo.v1.security.TokenVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -41,10 +41,26 @@ public class PersonControllerIT extends AbstractIT {
 
     @Test
     @Order(0)
+    public void shouldReturnForbiddenWhenTryToPerformPersonRequestAndUserNotAuthorized() {
+        var specificationWithoutToken = new RequestSpecBuilder()
+                .setPort(TestConstants.SERVER_PORT).setBasePath("/api/person/v1")
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        given()
+                .spec(specificationWithoutToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get()
+                .then().statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    @Order(1)
     public void shouldAuthorizeUserToPerformPersonRequestsOnTests() {
         var username = System.getenv("USERNAME");
         var password = System.getenv("PASSWORD");
-        var credentials = new AccountCredentialsVOIT(username, password);
+        var credentials = new AccountCredentialsVO(username, password);
 
         var accessToken = given()
                 .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
@@ -64,7 +80,7 @@ public class PersonControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     public void shouldPerformPostRequestToPersonWithSuccess() throws JsonProcessingException {
         var person = mockPersonVOIntegrationTest();
         var contentBody = given().spec(specification)
@@ -91,7 +107,7 @@ public class PersonControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void shouldReturnInvalidCorsWhenPerformingPostToPersonWithInvalidOrigin() {
         var person = mockPersonVOIntegrationTest();
         var contentBody = given().spec(specification)
@@ -107,7 +123,7 @@ public class PersonControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void shouldPerformGetRequestToFindPersonWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -140,7 +156,7 @@ public class PersonControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void shouldReturnInvalidCorsWhenPerformingGetToFindPersonWithInvalidOrigin() {
         var contentBody = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -155,7 +171,7 @@ public class PersonControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void shouldPerformDeleteRequestToRemovePersonWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -163,8 +179,7 @@ public class PersonControllerIT extends AbstractIT {
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
-        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
-        });
+        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
         assertFalse(people.isEmpty());
 
         PersonVOIT personToDelete = people.get(0);
@@ -183,7 +198,7 @@ public class PersonControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void shouldReturnInvalidCorsWhenPerformingDeleteToRemovePersonWithInvalidOrigin() {
         var contentBody = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
