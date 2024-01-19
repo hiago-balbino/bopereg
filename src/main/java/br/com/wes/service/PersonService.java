@@ -8,6 +8,13 @@ import br.com.wes.model.Person;
 import br.com.wes.repository.PersonRepository;
 import br.com.wes.vo.v1.PersonVO;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,10 +30,12 @@ public class PersonService {
     private final Logger logger = Logger.getLogger(PersonService.class.getName());
     private final PersonRepository personRepository;
     private final ObjectModelMapper mapper;
+    private final PagedResourcesAssembler<PersonVO> assembler;
 
-    public PersonService(PersonRepository personRepository, ObjectModelMapper mapper) {
+    public PersonService(PersonRepository personRepository, ObjectModelMapper mapper, PagedResourcesAssembler<PersonVO> assembler) {
         this.personRepository = personRepository;
         this.mapper = mapper;
+        this.assembler = assembler;
     }
 
     public PersonVO create(PersonVO person) {
@@ -83,14 +92,19 @@ public class PersonService {
         return addPersonLinkAndReturn(mapper.map(person, PersonVO.class));
     }
 
-    public List<PersonVO> findAll() {
+    public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
         logger.info("Finding all people");
 
-        List<Person> all = personRepository.findAll();
-        var peopleVO = mapper.map(all, PersonVO.class);
-        peopleVO.forEach(this::addPersonLinkAndReturn);
+        Page<PersonVO> people = personRepository
+                .findAll(pageable)
+                .map(p -> mapper.map(p, PersonVO.class));
+        people.forEach(this::addPersonLinkAndReturn);
 
-        return peopleVO;
+
+        Link link = linkTo(
+                methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
+                .withSelfRel();
+        return assembler.toModel(people, link);
     }
 
     private PersonVO addPersonLinkAndReturn(PersonVO personVO) {
