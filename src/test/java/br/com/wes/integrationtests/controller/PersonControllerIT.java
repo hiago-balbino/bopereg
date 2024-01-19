@@ -4,7 +4,7 @@ import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
 import br.com.wes.integrationtests.vo.AccountCredentialsVOIT;
 import br.com.wes.integrationtests.vo.PersonVOIT;
-import br.com.wes.integrationtests.vo.TokenVOIT;
+import br.com.wes.vo.v1.security.TokenVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -18,6 +18,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PersonControllerJsonIT extends AbstractIT {
+public class PersonControllerIT extends AbstractIT {
 
     private static RequestSpecification specification;
 
@@ -47,11 +48,11 @@ public class PersonControllerJsonIT extends AbstractIT {
 
         var accessToken = given()
                 .port(TestConstants.SERVER_PORT).basePath("/auth/signin")
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(credentials)
                 .when().post()
                 .then().statusCode(HttpStatus.OK.value())
-                .extract().body().as(TokenVOIT.class)
+                .extract().body().as(TokenVO.class)
                 .getAccessToken();
 
         specification = new RequestSpecBuilder()
@@ -67,7 +68,7 @@ public class PersonControllerJsonIT extends AbstractIT {
     public void shouldPerformPostRequestToPersonWithSuccess() throws JsonProcessingException {
         var person = mockPersonVOIntegrationTest();
         var contentBody = given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .body(person)
                 .when().post()
@@ -94,7 +95,7 @@ public class PersonControllerJsonIT extends AbstractIT {
     public void shouldReturnInvalidCorsWhenPerformingPostToPersonWithInvalidOrigin() {
         var person = mockPersonVOIntegrationTest();
         var contentBody = given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .body(person)
                 .when().post()
@@ -109,18 +110,19 @@ public class PersonControllerJsonIT extends AbstractIT {
     @Order(3)
     public void shouldPerformGetRequestToFindPersonWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
+        });
         assertFalse(people.isEmpty());
 
         PersonVOIT personToFetch = people.get(0);
         var contentBodyFindById = given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .pathParam("id", personToFetch.getId())
                 .when().get("{id}")
@@ -141,7 +143,7 @@ public class PersonControllerJsonIT extends AbstractIT {
     @Order(4)
     public void shouldReturnInvalidCorsWhenPerformingGetToFindPersonWithInvalidOrigin() {
         var contentBody = given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .pathParam("id", 1)
                 .when().get("{id}")
@@ -156,23 +158,24 @@ public class PersonControllerJsonIT extends AbstractIT {
     @Order(5)
     public void shouldPerformDeleteRequestToRemovePersonWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
-        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
+        });
         assertFalse(people.isEmpty());
 
         PersonVOIT personToDelete = people.get(0);
         given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .pathParam("id", personToDelete.getId())
                 .when().delete("{id}")
                 .then().statusCode(HttpStatus.NO_CONTENT.value());
         given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .pathParam("id", personToDelete.getId())
                 .when().get("{id}")
@@ -183,7 +186,7 @@ public class PersonControllerJsonIT extends AbstractIT {
     @Order(6)
     public void shouldReturnInvalidCorsWhenPerformingDeleteToRemovePersonWithInvalidOrigin() {
         var contentBody = given().spec(specification)
-                .contentType(TestConstants.CONTENT_TYPE_JSON)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .pathParam("id", 1)
                 .when().delete("{id}")

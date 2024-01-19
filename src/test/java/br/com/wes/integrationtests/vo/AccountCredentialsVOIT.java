@@ -1,12 +1,9 @@
 package br.com.wes.integrationtests.vo;
 
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-@XmlRootElement
 public class AccountCredentialsVOIT implements Serializable {
 
     @Serial
