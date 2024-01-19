@@ -7,6 +7,7 @@ import br.com.wes.mapper.ObjectModelMapper;
 import br.com.wes.model.Person;
 import br.com.wes.repository.PersonRepository;
 import br.com.wes.vo.v1.PersonVO;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,6 +52,17 @@ public class PersonService {
 
         var personUpdated = mapper.map(personRepository.save(personToUpdate), PersonVO.class);
         return addPersonLinkAndReturn(personUpdated);
+    }
+
+    @Transactional
+    public PersonVO disablePerson(Long id) {
+        logger.info("Disabling one person");
+
+        personRepository.disablePerson(id);
+        var person = personRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+
+        return addPersonLinkAndReturn(mapper.map(person, PersonVO.class));
     }
 
     public void delete(Long id) {

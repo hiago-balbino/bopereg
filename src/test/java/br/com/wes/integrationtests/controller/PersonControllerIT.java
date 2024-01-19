@@ -99,7 +99,9 @@ public class PersonControllerIT extends AbstractIT {
         assertNotNull(personPersisted.getLastName());
         assertNotNull(personPersisted.getGender());
         assertNotNull(personPersisted.getAddress());
+        assertNotNull(personPersisted.getEnabled());
         assertTrue(personPersisted.getId() > 0);
+        assertTrue(personPersisted.getEnabled());
         assertEquals("Wes", personPersisted.getFirstName());
         assertEquals("B.", personPersisted.getLastName());
         assertEquals("Male", personPersisted.getGender());
@@ -132,8 +134,7 @@ public class PersonControllerIT extends AbstractIT {
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
-        });
+        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
         assertFalse(people.isEmpty());
 
         PersonVOIT personToFetch = people.get(0);
@@ -152,6 +153,7 @@ public class PersonControllerIT extends AbstractIT {
         assertNotNull(personPersisted.getLastName());
         assertNotNull(personPersisted.getGender());
         assertNotNull(personPersisted.getAddress());
+        assertNotNull(personPersisted.getEnabled());
         assertEquals(personToFetch, personPersisted);
     }
 
@@ -212,12 +214,54 @@ public class PersonControllerIT extends AbstractIT {
         assertEquals("Invalid CORS request", contentBody);
     }
 
+    @Test
+    @Order(8)
+    public void shouldPerformPatchRequestToDisablePersonByIDWithSuccess() throws JsonProcessingException {
+        var contentBodyFindAll = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .when().get()
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        assertFalse(people.isEmpty());
+
+        var personToDisable = people.get(0);
+        assertTrue(personToDisable.getEnabled());
+
+        var bodyPersonDisabled = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .pathParam("id", personToDisable.getId())
+                .when().patch("{id}")
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+        var personDisabled = mapper.readValue(bodyPersonDisabled, PersonVOIT.class);
+        assertFalse(personDisabled.getEnabled());
+    }
+
+    @Test
+    @Order(9)
+    public void shouldReturnInvalidCorsWhenPerformingPatchToDisablePersonWithInvalidOrigin() {
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
+                .pathParam("id", 1)
+                .when().patch("{id}")
+                .then().statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().asString();
+
+        assertNotNull(contentBody);
+        assertEquals("Invalid CORS request", contentBody);
+    }
+
     private PersonVOIT mockPersonVOIntegrationTest() {
         PersonVOIT person = new PersonVOIT();
         person.setFirstName("Wes");
         person.setLastName("B.");
         person.setGender("Male");
         person.setAddress("Anywhere");
+        person.setEnabled(Boolean.TRUE);
         return person;
     }
 }
