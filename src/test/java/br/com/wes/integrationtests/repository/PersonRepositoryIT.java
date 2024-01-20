@@ -40,6 +40,13 @@ public class PersonRepositoryIT extends AbstractIT {
     }
 
     @Test
+    public void shouldReturnEmptyResultWhenNotFoundPeopleByName() {
+        Pageable pageable = PageRequest.of(0, 6, Sort.by(Direction.ASC, "firstName"));
+        List<Person> people = personRepository.findPeopleByName("Unknown", pageable).getContent();
+        assertTrue(people.isEmpty());
+    }
+
+    @Test
     public void shouldDisablePersonWithSuccess() {
         personRepository.disablePerson(1L);
         Optional<Person> personOpt = personRepository.findById(1L);
