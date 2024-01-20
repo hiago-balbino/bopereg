@@ -261,6 +261,42 @@ public class PersonControllerIT extends AbstractIT {
         assertEquals("Invalid CORS request", contentBody);
     }
 
+    @Test
+    @Order(10)
+    public void shouldReturnPeopleWithSuccessWhenFindByName() throws JsonProcessingException {
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .pathParam("firstName", "Ayr")
+                .queryParams("page", 0, "size", 6, "direction", "asc")
+                .when().get("/findPeopleByName/{firstName}")
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+
+        PersonVOITWrapper wrapper = mapper.readValue(contentBody, PersonVOITWrapper.class);
+        var people = wrapper.getEmbedded().getPeople();
+        assertFalse(people.isEmpty());
+
+        var person = people.getFirst();
+        assertEquals("Ayrton", person.getFirstName());
+    }
+
+    @Test
+    @Order(11)
+    public void shouldReturnInvalidCorsWhenFindPeopleByNameWithInvalidOrigin() {
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
+                .pathParam("firstName", "Ayr")
+                .queryParams("page", 0, "size", 6, "direction", "asc")
+                .when().get("/findPeopleByName/{firstName}")
+                .then().statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().asString();
+
+        assertNotNull(contentBody);
+        assertEquals("Invalid CORS request", contentBody);
+    }
+
     private PersonVOIT mockPersonVOIntegrationTest() {
         PersonVOIT person = new PersonVOIT();
         person.setFirstName("Wes");
