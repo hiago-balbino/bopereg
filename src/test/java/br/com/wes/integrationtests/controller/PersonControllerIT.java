@@ -3,10 +3,10 @@ package br.com.wes.integrationtests.controller;
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
 import br.com.wes.integrationtests.vo.PersonVOIT;
+import br.com.wes.integrationtests.vo.wrapper.PersonVOITWrapper;
 import br.com.wes.vo.v1.security.AccountCredentialsVO;
 import br.com.wes.vo.v1.security.TokenVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
@@ -130,14 +130,16 @@ public class PersonControllerIT extends AbstractIT {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        PersonVOITWrapper wrapper = mapper.readValue(contentBodyFindAll, PersonVOITWrapper.class);
+        List<PersonVOIT> people = wrapper.getEmbedded().getPeople();
         assertFalse(people.isEmpty());
 
-        PersonVOIT personToFetch = people.get(0);
+        PersonVOIT personToFetch = people.getFirst();
         var contentBodyFindById = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
@@ -178,13 +180,15 @@ public class PersonControllerIT extends AbstractIT {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
-        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        PersonVOITWrapper wrapper = mapper.readValue(contentBodyFindAll, PersonVOITWrapper.class);
+        List<PersonVOIT> people = wrapper.getEmbedded().getPeople();
         assertFalse(people.isEmpty());
 
-        PersonVOIT personToDelete = people.get(0);
+        PersonVOIT personToDelete = people.getFirst();
         given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
@@ -220,13 +224,15 @@ public class PersonControllerIT extends AbstractIT {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
-        List<PersonVOIT> people = mapper.readValue(contentBodyFindAll, new TypeReference<>() {});
+        PersonVOITWrapper wrapper = mapper.readValue(contentBodyFindAll, PersonVOITWrapper.class);
+        List<PersonVOIT> people = wrapper.getEmbedded().getPeople();
         assertFalse(people.isEmpty());
 
-        var personToDisable = people.get(0);
+        var personToDisable = people.getFirst();
         assertTrue(personToDisable.getEnabled());
 
         var bodyPersonDisabled = given().spec(specification)
