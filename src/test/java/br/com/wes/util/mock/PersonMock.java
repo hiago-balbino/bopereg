@@ -39,6 +39,7 @@ public class PersonMock {
         person.setLastName("Last Name Test" + number);
         person.setAddress("Address Test" + number);
         person.setGender((number % 2) == 0 ? "Male" : "Female");
+        person.setEnabled(Boolean.TRUE);
         return person;
     }
 
@@ -49,6 +50,7 @@ public class PersonMock {
         person.setLastName("Last Name Test" + number);
         person.setAddress("Address Test" + number);
         person.setGender((number % 2) == 0 ? "Male" : "Female");
+        person.setEnabled(Boolean.TRUE);
         return person;
     }
 }
