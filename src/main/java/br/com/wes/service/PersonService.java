@@ -8,7 +8,6 @@ import br.com.wes.model.Person;
 import br.com.wes.repository.PersonRepository;
 import br.com.wes.vo.v1.PersonVO;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -17,7 +16,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -100,6 +98,20 @@ public class PersonService {
                 .map(p -> mapper.map(p, PersonVO.class));
         people.forEach(this::addPersonLinkAndReturn);
 
+
+        Link link = linkTo(
+                methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
+                .withSelfRel();
+        return assembler.toModel(people, link);
+    }
+
+    public PagedModel<EntityModel<PersonVO>> findPeopleByName(String firstName, Pageable pageable) {
+        logger.info("Finding people by first name");
+
+        Page<PersonVO> people = personRepository
+                .findPeopleByName(firstName, pageable)
+                .map(p -> mapper.map(p, PersonVO.class));
+        people.forEach(this::addPersonLinkAndReturn);
 
         Link link = linkTo(
                 methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
