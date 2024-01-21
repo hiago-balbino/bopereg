@@ -98,7 +98,6 @@ public class PersonService {
                 .map(p -> mapper.map(p, PersonVO.class));
         people.forEach(this::addPersonLinkAndReturn);
 
-
         Link link = linkTo(
                 methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
                 .withSelfRel();

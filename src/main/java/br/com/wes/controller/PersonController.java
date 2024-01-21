@@ -174,7 +174,6 @@ public class PersonController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
             }
     )
-
     @GetMapping(value = "/findPeopleByName/{firstName}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<PagedModel<EntityModel<PersonVO>>> findPeopleByName(
             @PathVariable(value = "firstName") String firstName,

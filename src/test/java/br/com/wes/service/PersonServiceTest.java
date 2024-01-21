@@ -13,10 +13,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,6 +37,10 @@ class PersonServiceTest {
     private PersonRepository personRepository;
     @Mock
     private ObjectModelMapper mapper;
+    @Mock
+    private PagedResourcesAssembler<PersonVO> assembler;
+    @Mock
+    private PagedModel<EntityModel<PersonVO>> pagedModel;
 
     @BeforeEach
     public void setUp() {
@@ -173,55 +183,70 @@ class PersonServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    // TODO
-//    @Test
-//    public void shouldFindAllPersonWithSuccess() {
-//        List<Person> peopleMock = input.mockEntities();
-//        when(personRepository.findAll()).thenReturn(peopleMock);
-//
-//        List<PersonVO> peopleVOMock = input.mockVOs();
-//        when(mapper.map(peopleMock, PersonVO.class)).thenReturn(peopleVOMock);
-//
-//        var people = personService.findAll(pageable);
-//
-//        PersonVO firstPerson = people.get(0);
-//        assertNotNull(firstPerson);
-//        assertNotNull(firstPerson.getKey());
-//        assertNotNull(firstPerson.getLinks());
-//        assertTrue(people.toString().contains("</api/person/v1/0>;rel=\"self\""));
-//        assertEquals("First Name Test0", firstPerson.getFirstName());
-//        assertEquals("Last Name Test0", firstPerson.getLastName());
-//        assertEquals("Male", firstPerson.getGender());
-//        assertEquals("Address Test0", firstPerson.getAddress());
-//
-//        PersonVO secondPerson = people.get(1);
-//        assertNotNull(secondPerson);
-//        assertNotNull(secondPerson.getKey());
-//        assertNotNull(secondPerson.getLinks());
-//        assertTrue(people.toString().contains("</api/person/v1/1>;rel=\"self\""));
-//        assertEquals("First Name Test1", secondPerson.getFirstName());
-//        assertEquals("Last Name Test1", secondPerson.getLastName());
-//        assertEquals("Female", secondPerson.getGender());
-//        assertEquals("Address Test1", secondPerson.getAddress());
-//
-//        PersonVO thirdPerson = people.get(2);
-//        assertNotNull(thirdPerson);
-//        assertNotNull(thirdPerson.getKey());
-//        assertNotNull(thirdPerson.getLinks());
-//        assertTrue(people.toString().contains("</api/person/v1/2>;rel=\"self\""));
-//        assertEquals("First Name Test2", thirdPerson.getFirstName());
-//        assertEquals("Last Name Test2", thirdPerson.getLastName());
-//        assertEquals("Male", thirdPerson.getGender());
-//        assertEquals("Address Test2", thirdPerson.getAddress());
-//    }
+    @Test
+    public void shouldFindAllPersonWithSuccess() {
+        List<Person> people = input.mockEntities();
+        Page<Person> pagePeople = new PageImpl<>(people);
+        List<PersonVO> peopleVO = input.mockVOs();
+        Page<PersonVO> pagePeopleVO = new PageImpl<>(peopleVO);
+        Collection<EntityModel<PersonVO>> pagedModelContent = Arrays.asList(
+                EntityModel.of(peopleVO.get(0)),
+                EntityModel.of(peopleVO.get(1)),
+                EntityModel.of(peopleVO.get(2))
+        );
+        Pageable pageable = PageRequest.of(0, 10);
 
-    // TODO
-//    @Test
-//    public void shouldReturnEmptyResultWhenDoesNotHaveAnyPersonSaved() {
-//        when(personRepository.findAll()).thenReturn(Collections.emptyList());
-//
-//        List<PersonVO> people = personService.findAll(pageable);
-//
-//        assertTrue(people.isEmpty());
-//    }
+        when(personRepository.findAll(PageRequest.of(0, 10))).thenReturn(pagePeople);
+        when(mapper.map(people.get(0), PersonVO.class)).thenReturn(peopleVO.get(0));
+        when(mapper.map(people.get(1), PersonVO.class)).thenReturn(peopleVO.get(1));
+        when(mapper.map(people.get(2), PersonVO.class)).thenReturn(peopleVO.get(2));
+        when(assembler.toModel(eq(pagePeopleVO), any(Link.class))).thenReturn(pagedModel);
+        when(pagedModel.getContent()).thenReturn(pagedModelContent);
+
+        List<EntityModel<PersonVO>> allPeople = personService.findAll(pageable).getContent().stream().toList();
+        assertFalse(allPeople.isEmpty());
+
+        PersonVO firstPerson = allPeople.getFirst().getContent();
+        assertNotNull(firstPerson);
+        assertNotNull(firstPerson.getKey());
+        assertNotNull(firstPerson.getLinks());
+        assertTrue(firstPerson.toString().contains("</api/person/v1/0>;rel=\"self\""));
+        assertEquals("First Name Test0", firstPerson.getFirstName());
+        assertEquals("Last Name Test0", firstPerson.getLastName());
+        assertEquals("Male", firstPerson.getGender());
+        assertEquals("Address Test0", firstPerson.getAddress());
+
+        PersonVO secondPerson = allPeople.get(1).getContent();
+        assertNotNull(secondPerson);
+        assertNotNull(secondPerson.getKey());
+        assertNotNull(secondPerson.getLinks());
+        assertTrue(secondPerson.toString().contains("</api/person/v1/1>;rel=\"self\""));
+        assertEquals("First Name Test1", secondPerson.getFirstName());
+        assertEquals("Last Name Test1", secondPerson.getLastName());
+        assertEquals("Female", secondPerson.getGender());
+        assertEquals("Address Test1", secondPerson.getAddress());
+
+        PersonVO thirdPerson = allPeople.get(2).getContent();
+        assertNotNull(thirdPerson);
+        assertNotNull(thirdPerson.getKey());
+        assertNotNull(thirdPerson.getLinks());
+        assertTrue(thirdPerson.toString().contains("</api/person/v1/2>;rel=\"self\""));
+        assertEquals("First Name Test2", thirdPerson.getFirstName());
+        assertEquals("Last Name Test2", thirdPerson.getLastName());
+        assertEquals("Male", thirdPerson.getGender());
+        assertEquals("Address Test2", thirdPerson.getAddress());
+    }
+
+    @Test
+    public void shouldReturnEmptyResultWhenDoesNotHaveAnyPersonSaved() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(personRepository.findAll(pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+        when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
+        when(pagedModel.getContent()).thenReturn(Collections.emptyList());
+
+        PagedModel<EntityModel<PersonVO>> allPeople = personService.findAll(pageable);
+
+        assertTrue(allPeople.getContent().isEmpty());
+    }
 }
