@@ -1,5 +1,6 @@
 package br.com.wes.service;
 
+import br.com.wes.controller.PersonController;
 import br.com.wes.exception.RequiredObjectIsNullException;
 import br.com.wes.exception.ResourceNotFoundException;
 import br.com.wes.mapper.ObjectModelMapper;
@@ -18,12 +19,15 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.PagedModel;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @ExtendWith(MockitoExtension.class)
 class PersonServiceTest {
@@ -193,15 +197,20 @@ class PersonServiceTest {
                 EntityModel.of(peopleVO.get(2))
         );
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName"));
+        Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
 
         when(personRepository.findAll(PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName")))).thenReturn(pagePeople);
         when(mapper.map(people.get(0), PersonVO.class)).thenReturn(peopleVO.get(0));
         when(mapper.map(people.get(1), PersonVO.class)).thenReturn(peopleVO.get(1));
         when(mapper.map(people.get(2), PersonVO.class)).thenReturn(peopleVO.get(2));
-        when(assembler.toModel(eq(pagePeopleVO), any(Link.class))).thenReturn(pagedModel);
+        when(assembler.toModel(eq(pagePeopleVO), eq(link))).thenReturn(pagedModel);
         when(pagedModel.getContent()).thenReturn(pagedModelContent);
+        when(pagedModel.getLinks()).thenReturn(Links.of(link));
 
-        List<EntityModel<PersonVO>> allPeople = personService.findAll(pageable).getContent().stream().toList();
+        PagedModel<EntityModel<PersonVO>> pagedPeople = personService.findAll(pageable);
+        assertEquals("</api/person/v1?page=0&size=10&direction=asc>;rel=\"self\"", pagedPeople.getLinks().toString());
+
+        List<EntityModel<PersonVO>> allPeople = pagedPeople.getContent().stream().toList();
         assertFalse(allPeople.isEmpty());
 
         PersonVO firstPerson = allPeople.getFirst().getContent();
@@ -242,10 +251,12 @@ class PersonServiceTest {
         when(personRepository.findAll(pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
         when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
         when(pagedModel.getContent()).thenReturn(Collections.emptyList());
+        when(pagedModel.getLinks()).thenReturn(Links.NONE);
 
         PagedModel<EntityModel<PersonVO>> allPeople = personService.findAll(pageable);
 
         assertTrue(allPeople.getContent().isEmpty());
+        assertTrue(allPeople.getLinks().isEmpty());
     }
 
     @Test
@@ -256,14 +267,19 @@ class PersonServiceTest {
         Page<PersonVO> pagePeopleVO = new PageImpl<>(peopleVO);
         Collection<EntityModel<PersonVO>> pagedModelContent = List.of(EntityModel.of(peopleVO.getFirst()));
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName"));
+        Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
         String firstName = "Test0";
 
         when(personRepository.findPeopleByName(firstName, pageable)).thenReturn(pagePeople);
         when(mapper.map(people.getFirst(), PersonVO.class)).thenReturn(peopleVO.getFirst());
-        when(assembler.toModel(eq(pagePeopleVO), any(Link.class))).thenReturn(pagedModel);
+        when(assembler.toModel(eq(pagePeopleVO), eq(link))).thenReturn(pagedModel);
         when(pagedModel.getContent()).thenReturn(pagedModelContent);
+        when(pagedModel.getLinks()).thenReturn(Links.of(link));
 
-        List<EntityModel<PersonVO>> allPeople = personService.findPeopleByName(firstName, pageable).getContent().stream().toList();
+        PagedModel<EntityModel<PersonVO>> pagedPeople = personService.findPeopleByName(firstName, pageable);
+        assertEquals("</api/person/v1?page=0&size=10&direction=asc>;rel=\"self\"", pagedPeople.getLinks().toString());
+
+        List<EntityModel<PersonVO>> allPeople = pagedPeople.getContent().stream().toList();
         assertFalse(allPeople.isEmpty());
 
         PersonVO person = allPeople.getFirst().getContent();
@@ -285,9 +301,11 @@ class PersonServiceTest {
         when(personRepository.findPeopleByName(firstName, pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
         when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
         when(pagedModel.getContent()).thenReturn(Collections.emptyList());
+        when(pagedModel.getLinks()).thenReturn(Links.NONE);
 
         PagedModel<EntityModel<PersonVO>> allPeople = personService.findPeopleByName(firstName, pageable);
 
         assertTrue(allPeople.getContent().isEmpty());
+        assertTrue(allPeople.getLinks().isEmpty());
     }
 }
