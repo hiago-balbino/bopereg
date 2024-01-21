@@ -35,8 +35,8 @@ public class AuthControllerIT extends AbstractIT {
     @Test
     @Order(1)
     public void shouldSigninUserWithSuccess() {
-        var username = System.getenv("USERNAME");
-        var password = System.getenv("PASSWORD");
+        var username = "usertest";
+        var password = "test123";
         var credentials = new AccountCredentialsVO(username, password);
 
         var tokenVO = given()
@@ -54,8 +54,8 @@ public class AuthControllerIT extends AbstractIT {
     @Test
     @Order(2)
     public void shouldRefreshUserTokenWithSuccess() {
-        var username = System.getenv("USERNAME");
-        var password = System.getenv("PASSWORD");
+        var username = "usertest";
+        var password = "test123";
         var credentials = new AccountCredentialsVO(username, password);
 
         var tokenVO = given()

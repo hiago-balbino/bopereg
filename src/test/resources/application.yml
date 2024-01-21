@@ -5,7 +5,7 @@ cors:
 security:
   jwt:
     token:
-      secret-key: ${JWT_SECRET}
+      secret-key: 73573
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

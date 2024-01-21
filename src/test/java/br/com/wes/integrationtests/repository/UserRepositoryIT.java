@@ -19,10 +19,10 @@ public class UserRepositoryIT extends AbstractIT {
 
     @Test
     public void shouldFindUserByUsername() {
-        User user = userRepository.findByUsername("wes");
+        User user = userRepository.findByUsername("usertest");
 
-        assertEquals("wes", user.getUsername());
-        assertEquals("Wes B.", user.getFullName());
+        assertEquals("usertest", user.getUsername());
+        assertEquals("User Test", user.getFullName());
         assertNotNull(user.getPassword());
         assertTrue(user.getAccountNonExpired());
         assertTrue(user.getAccountNonLocked());
