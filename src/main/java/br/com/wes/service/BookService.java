@@ -7,9 +7,14 @@ import br.com.wes.mapper.ObjectModelMapper;
 import br.com.wes.model.Book;
 import br.com.wes.repository.BookRepository;
 import br.com.wes.vo.v1.BookVO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -23,10 +28,12 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final ObjectModelMapper mapper;
+    private final PagedResourcesAssembler<BookVO> assembler;
 
-    public BookService(BookRepository bookRepository, ObjectModelMapper mapper) {
+    public BookService(BookRepository bookRepository, ObjectModelMapper mapper, PagedResourcesAssembler<BookVO> assembler) {
         this.bookRepository = bookRepository;
         this.mapper = mapper;
+        this.assembler = assembler;
     }
 
     public BookVO create(BookVO book) {
@@ -72,13 +79,32 @@ public class BookService {
         return addBookLinkAndReturn(mapper.map(book, BookVO.class));
     }
 
-    public List<BookVO> findAll() {
+    public PagedModel<EntityModel<BookVO>> findAll(Pageable pageable) {
         logger.info("Finding all books");
 
-        var books = mapper.map(bookRepository.findAll(), BookVO.class);
+        Page<BookVO> books = bookRepository
+                .findAll(pageable)
+                .map(b -> mapper.map(b, BookVO.class));
         books.forEach(this::addBookLinkAndReturn);
 
-        return books;
+        Link link = linkTo(
+                methodOn(BookController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
+                .withSelfRel();
+        return assembler.toModel(books, link);
+    }
+
+    public PagedModel<EntityModel<BookVO>> findBooksByTitle(String title, Pageable pageable) {
+        logger.info("Finding books by title");
+
+        Page<BookVO> books = bookRepository
+                .findBooksByTitle(title, pageable)
+                .map(b -> mapper.map(b, BookVO.class));
+        books.forEach(this::addBookLinkAndReturn);
+
+        Link link = linkTo(
+                methodOn(BookController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc"))
+                .withSelfRel();
+        return assembler.toModel(books, link);
     }
 
     private BookVO addBookLinkAndReturn(BookVO bookVO) {

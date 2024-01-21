@@ -41,7 +41,7 @@ public class BookMock {
         book.setId(number.longValue());
         book.setAuthor("Author" + number);
         book.setTitle("Title" + number);
-        book.setPrice((double) (2L * number));
+        book.setPrice(number > 0 ? (double) (2L * number) : (double) 1L);
         book.setLaunchDate(DEFAULT_DATE);
         return book;
     }
@@ -51,7 +51,7 @@ public class BookMock {
         bookVO.setKey(number.longValue());
         bookVO.setAuthor("Author" + number);
         bookVO.setTitle("Title" + number);
-        bookVO.setPrice((double) (2L * number));
+        bookVO.setPrice(number > 0 ? (double) (2L * number) : (double) 1L);
         bookVO.setLaunchDate(DEFAULT_DATE);
         return bookVO;
     }

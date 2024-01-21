@@ -3,10 +3,10 @@ package br.com.wes.integrationtests.controller;
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
 import br.com.wes.integrationtests.vo.BookVOIT;
+import br.com.wes.integrationtests.vo.wrapper.BookVOITWrapper;
 import br.com.wes.vo.v1.security.AccountCredentialsVO;
 import br.com.wes.vo.v1.security.TokenVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
@@ -130,12 +130,13 @@ public class BookControllerIT extends AbstractIT {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
 
-        List<BookVOIT> books = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
-        });
+        BookVOITWrapper wrapper = mapper.readValue(contentBodyFindAll, BookVOITWrapper.class);
+        List<BookVOIT> books = wrapper.getEmbedded().getBooks();
         assertFalse(books.isEmpty());
 
         BookVOIT bookToFetch = books.get(0);
@@ -177,11 +178,13 @@ public class BookControllerIT extends AbstractIT {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when().get()
                 .then().statusCode(HttpStatus.OK.value())
                 .extract().body().asString();
-        List<BookVOIT> books = mapper.readValue(contentBodyFindAll, new TypeReference<>() {
-        });
+
+        BookVOITWrapper wrapper = mapper.readValue(contentBodyFindAll, BookVOITWrapper.class);
+        List<BookVOIT> books = wrapper.getEmbedded().getBooks();
         assertFalse(books.isEmpty());
 
         BookVOIT bookToDelete = books.get(0);
@@ -207,6 +210,42 @@ public class BookControllerIT extends AbstractIT {
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .pathParam("id", 1)
                 .when().delete("{id}")
+                .then().statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().asString();
+
+        assertNotNull(contentBody);
+        assertEquals("Invalid CORS request", contentBody);
+    }
+
+    @Test
+    @Order(8)
+    public void shouldReturnBooksWithSuccessWhenFindByTitle() throws JsonProcessingException {
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .pathParam("title", "legacy code")
+                .queryParams("page", 0, "size", 10, "direction", "asc")
+                .when().get("/findBooksByTitle/{title}")
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+
+        BookVOITWrapper wrapper = mapper.readValue(contentBody, BookVOITWrapper.class);
+        var books = wrapper.getEmbedded().getBooks();
+        assertFalse(books.isEmpty());
+
+        var person = books.getFirst();
+        assertEquals("Working effectively with legacy code", person.getTitle());
+    }
+
+    @Test
+    @Order(9)
+    public void shouldReturnInvalidCorsWhenFindBooksByTitleWithInvalidOrigin() {
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
+                .pathParam("title", "legacy code")
+                .queryParams("page", 0, "size", 10, "direction", "asc")
+                .when().get("/findBooksByTitle/{title}")
                 .then().statusCode(HttpStatus.FORBIDDEN.value())
                 .extract().body().asString();
 
