@@ -13,10 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -194,9 +192,9 @@ class PersonServiceTest {
                 EntityModel.of(peopleVO.get(1)),
                 EntityModel.of(peopleVO.get(2))
         );
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName"));
 
-        when(personRepository.findAll(PageRequest.of(0, 10))).thenReturn(pagePeople);
+        when(personRepository.findAll(PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName")))).thenReturn(pagePeople);
         when(mapper.map(people.get(0), PersonVO.class)).thenReturn(peopleVO.get(0));
         when(mapper.map(people.get(1), PersonVO.class)).thenReturn(peopleVO.get(1));
         when(mapper.map(people.get(2), PersonVO.class)).thenReturn(peopleVO.get(2));
@@ -239,13 +237,56 @@ class PersonServiceTest {
 
     @Test
     public void shouldReturnEmptyResultWhenDoesNotHaveAnyPersonSaved() {
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName"));
 
         when(personRepository.findAll(pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
         when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
         when(pagedModel.getContent()).thenReturn(Collections.emptyList());
 
         PagedModel<EntityModel<PersonVO>> allPeople = personService.findAll(pageable);
+
+        assertTrue(allPeople.getContent().isEmpty());
+    }
+
+    @Test
+    public void shouldReturnPeopleWithSuccessWhenFindByFirstName() {
+        List<Person> people = List.of(input.mockEntity());
+        Page<Person> pagePeople = new PageImpl<>(people);
+        List<PersonVO> peopleVO = List.of(input.mockVO());
+        Page<PersonVO> pagePeopleVO = new PageImpl<>(peopleVO);
+        Collection<EntityModel<PersonVO>> pagedModelContent = List.of(EntityModel.of(peopleVO.getFirst()));
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName"));
+        String firstName = "Test0";
+
+        when(personRepository.findPeopleByName(firstName, pageable)).thenReturn(pagePeople);
+        when(mapper.map(people.getFirst(), PersonVO.class)).thenReturn(peopleVO.getFirst());
+        when(assembler.toModel(eq(pagePeopleVO), any(Link.class))).thenReturn(pagedModel);
+        when(pagedModel.getContent()).thenReturn(pagedModelContent);
+
+        List<EntityModel<PersonVO>> allPeople = personService.findPeopleByName(firstName, pageable).getContent().stream().toList();
+        assertFalse(allPeople.isEmpty());
+
+        PersonVO person = allPeople.getFirst().getContent();
+        assertNotNull(person);
+        assertNotNull(person.getKey());
+        assertNotNull(person.getLinks());
+        assertTrue(person.toString().contains("</api/person/v1/0>;rel=\"self\""));
+        assertEquals("First Name Test0", person.getFirstName());
+        assertEquals("Last Name Test0", person.getLastName());
+        assertEquals("Male", person.getGender());
+        assertEquals("Address Test0", person.getAddress());
+    }
+
+    @Test
+    public void shouldReturnEmptyResultWhenDoesNotHaveAnyPersonWithFirstName() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName"));
+        String firstName = "Test0";
+
+        when(personRepository.findPeopleByName(firstName, pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+        when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
+        when(pagedModel.getContent()).thenReturn(Collections.emptyList());
+
+        PagedModel<EntityModel<PersonVO>> allPeople = personService.findPeopleByName(firstName, pageable);
 
         assertTrue(allPeople.getContent().isEmpty());
     }
