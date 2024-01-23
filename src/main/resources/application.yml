@@ -1,5 +1,7 @@
 cors:
   originPatterns: ${CORS_ORIGINS}
+file:
+  upload-dir: ${HOME}/tmpfile
 security:
   jwt:
     token:
@@ -16,6 +18,12 @@ spring:
     hibernate:
       ddl-auto: none
       show-sql: false
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB # configuração para estabelecemos um limite para salvar em memória, quando passar disso é salvo no disco
+      max-file-size: 200MB # configuração para estabelecer o tamanho máximo de um arquivo
+      max-request-size: 215MB
 #    properties:
 #      hibernate:
 #        dialect: org.hibernate.dialect.MySQLDialect
