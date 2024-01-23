@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @RestController
 @RequestMapping("/api/file/v1")
 @Tag(name = "File", description = "Endpoints for upload and download files")
@@ -46,6 +50,31 @@ public class FileController {
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
     public UploadFileResponseVO uploadFile(@RequestParam("file") MultipartFile file) {
+        return storeUploadedFile(file);
+    }
+
+    @Operation(
+            summary = "Upload many files",
+            description = "Upload many files to save on local disk",
+            tags = {"File"},
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200", content = {
+                            @Content(schema = @Schema(implementation = UploadFileResponseVO.class))
+                    }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content),
+                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
+            }
+    )
+    @PostMapping("/uploadFiles")
+    public List<UploadFileResponseVO> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+        return Stream.of(files)
+                .map(this::storeUploadedFile)
+                .collect(Collectors.toList());
+    }
+
+    private UploadFileResponseVO storeUploadedFile(MultipartFile file) {
         String filename = fileStorageService.storeFile(file);
         String fileDownloadUri = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
