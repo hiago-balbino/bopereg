@@ -1,12 +1,9 @@
 package br.com.wes.vo.v1.security;
 
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
-@XmlRootElement
 public class AccountCredentialsVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 2924250126163321817L;
