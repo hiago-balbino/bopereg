@@ -1,7 +1,10 @@
 package br.com.wes.service;
 
 import br.com.wes.config.FileStorageConfig;
+import br.com.wes.exception.FileNotFoundException;
 import br.com.wes.exception.FileStorageException;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +47,23 @@ public class FileStorageService {
             return filename;
         } catch (Exception e) {
             throw new FileStorageException("Could not store file " + filename + ". Please try again", e);
+        }
+    }
+
+    public Resource loadFileAsResource(String filename) {
+        logger.info("Reading a file from the disk");
+
+        try {
+            Path filePath = this.fileStorageLocation.resolve(filename).normalize();
+
+            Resource resource = new UrlResource(filePath.toUri());
+            if (!resource.exists()) {
+                throw new FileStorageException("File not found");
+            }
+
+            return resource;
+        } catch (Exception e) {
+            throw new FileNotFoundException("File not found", e);
         }
     }
 }
