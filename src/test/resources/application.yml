@@ -19,6 +19,6 @@ spring:
   servlet:
     multipart:
       enabled: true
-      file-size-threshold: 2KB # configuração para estabelecemos um limite para salvar em memória, quando passar disso é salvo no disco
-      max-file-size: 200MB # configuração para estabelecer o tamanho máximo de um arquivo
+      file-size-threshold: 2KB # configuration to establish a limit to save in memory, when the size is greater than that the data is saved on disk
+      max-file-size: 200MB # configuration to establish the max size of a file
       max-request-size: 215MB

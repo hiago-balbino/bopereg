@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.2.0
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: bopereg
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_TCP_PORT: 3306
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    networks:
+      - bopereg-network
+  app:
+    container_name: bopereg
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /bopereg
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING.DATASOURCE.URL: jdbc:mysql://db:3306/bopereg?useTimezone=true&serverTimezone=UTC
+      SPRING.DATASOURCE.USERNAME: ${DB_USERNAME}
+      SPRING.DATASOURCE.PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '80:80'
+    command: mvn spring-boot:run
+    networks:
+      - bopereg-network
+    depends_on:
+      - db
+
+networks:
+  bopereg-network:
+    driver: bridge
