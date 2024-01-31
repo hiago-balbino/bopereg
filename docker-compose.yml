@@ -2,13 +2,12 @@ version: '3.9'
 
 services:
   db:
+    container_name: bopereg-db
     image: mysql:8.2.0
     command: mysqld --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: bopereg
       MYSQL_ROOT_HOST: '%'
@@ -20,11 +19,11 @@ services:
     networks:
       - bopereg-network
   app:
-    container_name: bopereg
+    container_name: bopereg-app
     build:
       context: .
       dockerfile: Dockerfile
-    working_dir: /bopereg
+    working_dir: /app
     restart: always
     environment:
       TZ: America/Sao_Paulo

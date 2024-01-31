@@ -1,7 +1,7 @@
 server:
   port: 80
 cors:
-  originPatterns: ${CORS_ORIGINS}
+  originPatterns: http://localhost:8080,https://thewes.com.br
 file:
   upload-dir: ${HOME}/tmpfile
 security:
