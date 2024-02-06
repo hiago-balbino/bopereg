@@ -1,9 +1,9 @@
-.PHONY: clean-pgk docker-up docker-ps docker-down
+.PHONY: clean-pkg docker-up docker-ps docker-down
 
-clean-pgk:
+clean-pkg:
 	mvn clean package
 
-docker-up: clean-pgk
+docker-up: clean-pkg
 	docker compose up -d --build
 
 docker-down:
