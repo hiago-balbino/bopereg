@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://github.com/hiago-balbino/bopereg/actions/workflows/tests.yaml/badge.svg?branch=main&event=push&logo=github&style=flat-square)](https://github.com/hiago-balbino/bopereg/actions/workflows/tests.yaml)
+
 # Bopereg ✏️
 
 This project serves an educational purpose, employing Java to manage the registration of books and people.
