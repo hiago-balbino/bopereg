@@ -1,13 +1,16 @@
+bopereg:
+  cors:
+    originPatterns: http://localhost:8080,http://localhost:8888
+  file:
+    upload-dir: ${HOME}/tmpfile
+  security:
+    jwt:
+      token:
+        secret-key: 73573
+
 server:
   port: 8888
-cors:
-  originPatterns: http://localhost:8080,http://localhost:8888
-file:
-  upload-dir: ${HOME}/tmpfile
-security:
-  jwt:
-    token:
-      secret-key: 73573
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

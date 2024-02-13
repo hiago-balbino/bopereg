@@ -1,4 +1,4 @@
-package br.com.wes.config;
+package br.com.wes.configuration;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

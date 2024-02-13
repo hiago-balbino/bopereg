@@ -1,6 +1,6 @@
 package br.com.wes.integrationtests.controller;
 
-import br.com.wes.config.FileStorageConfig;
+import br.com.wes.configuration.property.BoperegProperty;
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
 import br.com.wes.vo.v1.UploadFileResponseVO;
@@ -11,11 +11,7 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,9 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -54,8 +48,8 @@ public class FileControllerIT extends AbstractIT {
     @SuppressWarnings({"resource", "ResultOfMethodCallIgnored"})
     @AfterAll
     public static void afterEach() throws IOException {
-        FileStorageConfig fileStorageConfig = applicationContext.getBean(FileStorageConfig.class);
-        Files.walk(Paths.get(fileStorageConfig.getUploadDir()))
+        BoperegProperty property = applicationContext.getBean(BoperegProperty.class);
+        Files.walk(Paths.get(property.file().uploadDir()))
                 .map(Path::toFile)
                 .forEach(File::delete);
     }

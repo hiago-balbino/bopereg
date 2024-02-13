@@ -1,6 +1,6 @@
 package br.com.wes.security.jwt;
 
-import br.com.wes.config.JwtSecurityConfigProperties;
+import br.com.wes.configuration.property.BoperegProperty;
 import br.com.wes.exception.InvalidJwtAuthenticationException;
 import br.com.wes.vo.v1.security.TokenVO;
 import com.auth0.jwt.JWT;
@@ -25,19 +25,20 @@ import java.util.List;
 @Service
 public class JwtTokenProvider {
 
-    private final JwtSecurityConfigProperties securityProperties;
+    private final BoperegProperty boperegProperty;
     private final UserDetailsService userDetailsService;
     Algorithm algorithm = null;
+    String secretKeyEncoded = null;
 
     @PostConstruct
     protected void init() {
-        securityProperties.setSecretKey(Base64.getEncoder().encodeToString(securityProperties.getSecretKey().getBytes()));
-        algorithm = Algorithm.HMAC256(securityProperties.getSecretKey().getBytes());
+        secretKeyEncoded = Base64.getEncoder().encodeToString(boperegProperty.security().jwt().token().secretKey().getBytes());
+        algorithm = Algorithm.HMAC256(secretKeyEncoded.getBytes());
     }
 
     public TokenVO createAccessToken(String username, List<String> roles) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + securityProperties.getExpireLength());
+        Date validity = new Date(now.getTime() + boperegProperty.security().jwt().token().expireLength());
 
         String accessToken = getAccessToken(username, roles, now, validity);
         String refreshToken = getRefreshToken(username, roles, now);
@@ -79,7 +80,7 @@ public class JwtTokenProvider {
     }
 
     private String getRefreshToken(String username, List<String> roles, Date now) {
-        Date validityRefreshToken = new Date(now.getTime() + (securityProperties.getExpireLength() * 3)); // refresh token valid for 3 hours
+        Date validityRefreshToken = new Date(now.getTime() + (boperegProperty.security().jwt().token().expireLength() * 3)); // refresh token valid for 3 hours
 
         return JWT.create()
                 .withClaim("roles", roles)
@@ -97,7 +98,7 @@ public class JwtTokenProvider {
     }
 
     private DecodedJWT decodedToken(String token) {
-        Algorithm alg = Algorithm.HMAC256(securityProperties.getSecretKey().getBytes());
+        Algorithm alg = Algorithm.HMAC256(secretKeyEncoded.getBytes());
         JWTVerifier verifier = JWT.require(alg).build();
         return verifier.verify(token);
     }

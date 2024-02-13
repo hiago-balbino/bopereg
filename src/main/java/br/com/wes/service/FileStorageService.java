@@ -1,6 +1,6 @@
 package br.com.wes.service;
 
-import br.com.wes.config.FileStorageConfig;
+import br.com.wes.configuration.property.BoperegProperty;
 import br.com.wes.exception.FileNotFoundException;
 import br.com.wes.exception.FileStorageException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +21,8 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
 
-    public FileStorageService(FileStorageConfig fileStorageConfig) {
-        this.fileStorageLocation = Paths.get(fileStorageConfig.getUploadDir()).toAbsolutePath().normalize();
+    public FileStorageService(BoperegProperty property) {
+        this.fileStorageLocation = Paths.get(property.file().uploadDir()).toAbsolutePath().normalize();
 
         try {
             Files.createDirectories(this.fileStorageLocation);

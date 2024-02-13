@@ -1,21 +1,22 @@
-package br.com.wes.config;
+package br.com.wes.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
+import br.com.wes.configuration.property.BoperegProperty;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@RequiredArgsConstructor
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${cors.originPatterns:http://localhost:8080}")
-    private String corsOriginPatterns = "";
+    private final BoperegProperty property;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        var allowedOrigins = corsOriginPatterns.split(",");
+        var allowedOrigins = property.cors().originPatterns().split(",");
         registry.addMapping("/**")
                 .allowedMethods("*")
                 .allowedOrigins(allowedOrigins)

@@ -139,7 +139,7 @@ public class BookControllerIT extends AbstractIT {
         List<BookVOIT> books = wrapper.getEmbedded().getBooks();
         assertFalse(books.isEmpty());
 
-        BookVOIT bookToFetch = books.get(0);
+        BookVOIT bookToFetch = books.getFirst();
         var contentBodyFindById = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", bookToFetch.getId())
@@ -187,7 +187,7 @@ public class BookControllerIT extends AbstractIT {
         List<BookVOIT> books = wrapper.getEmbedded().getBooks();
         assertFalse(books.isEmpty());
 
-        BookVOIT bookToDelete = books.get(0);
+        BookVOIT bookToDelete = books.getFirst();
         given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)

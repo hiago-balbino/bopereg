@@ -1,4 +1,4 @@
-package br.com.wes.config;
+package br.com.wes.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

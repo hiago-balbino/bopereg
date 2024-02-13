@@ -1,4 +1,4 @@
-package br.com.wes.config;
+package br.com.wes.configuration;
 
 import br.com.wes.security.jwt.JwtTokenFilter;
 import br.com.wes.security.jwt.JwtTokenProvider;
