@@ -2,6 +2,19 @@
 
 This project serves an educational purpose, employing Java to manage the registration of books and people.
 
+This application have some populated data using database migration.
+
+Users to signin:
+```
+username=wes password=admin123
+username=tsu password=user123
+```
+
+User to integration test:
+```text
+username=usertest password=test123
+```
+
 ## Dependencies
 
 * Maven
