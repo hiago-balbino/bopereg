@@ -43,8 +43,19 @@ DB_PASSWORD='admin123'
 
 ## Running the tests
 
+*Unit tests*
 ```bash
-mvn test
+make tests # or mvn test
+```
+
+*Integration tests*
+```bash
+make integration-tests # or mvn integration-test
+```
+
+*Unit and Integration tests*
+```bash
+make all-tests # or mvn test integration-test
 ```
 
 ## Running the application
@@ -66,7 +77,7 @@ make docker-ps # or docker compose ps
 You can also run the application without Docker Compose, but the databased need to be running on Docker.
 
 ```bash
-docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=admin123 -p 3306:3306 mysql:8.3.0
+make mysql # or docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=admin123 -p 3306:3306 mysql:8.3.0
 ```
 
 After the database is running, you can create the database schema called `bopereg` using the tools of your preference.
@@ -80,13 +91,13 @@ make clean-pkg # or mvn clean package
 #### Running the application
 
 ```bash
-java -jar target/bopereg-1.0.0.jar
+make run-pkg # or java -jar target/bopereg-*.jar
 ```
 
 or
 
 ```bash
-mvn spring-boot:run
+make run-boot # or mvn spring-boot:run
 ```
 
 ## cURL
