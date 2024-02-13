@@ -1,7 +1,7 @@
 server:
   port: 8888
 cors:
-  originPatterns: http://localhost:8080
+  originPatterns: http://localhost:8080,http://localhost:8888
 file:
   upload-dir: ${HOME}/tmpfile
 security:

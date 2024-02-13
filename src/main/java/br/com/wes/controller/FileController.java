@@ -96,8 +96,7 @@ public class FileController {
     )
     @GetMapping(
             value = "/downloadFile/{filename:.+}",
-            produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_VALUE}
+            produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE}
     )
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename, HttpServletRequest request) throws IOException {
         Resource resource = fileStorageService.loadFileAsResource(filename);

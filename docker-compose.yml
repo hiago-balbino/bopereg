@@ -31,7 +31,7 @@ services:
       SPRING.DATASOURCE.USERNAME: ${DB_USERNAME}
       SPRING.DATASOURCE.PASSWORD: ${DB_PASSWORD}
     ports:
-      - '80:80'
+      - '8080:8080'
     command: mvn spring-boot:run
     networks:
       - bopereg-network
