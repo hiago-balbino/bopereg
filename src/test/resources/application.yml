@@ -1,17 +1,8 @@
-bopereg:
-  cors:
-    originPatterns: http://localhost:8080,http://localhost:8888
-  file:
-    upload-dir: ${HOME}/tmpfile
-  security:
-    jwt:
-      token:
-        secret-key: 73573
-
-server:
-  port: 8888
-
 spring:
+  application:
+      name: bopereg
+  main:
+      banner-mode: off
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
@@ -25,3 +16,20 @@ spring:
       file-size-threshold: 2KB # configuration to establish a limit to save in memory, when the size is greater than that the data is saved on disk
       max-file-size: 200MB # configuration to establish the max size of a file
       max-request-size: 215MB
+
+server:
+  port: 8888
+
+logging:
+  level:
+    root: info
+
+bopereg:
+  cors:
+    originPatterns: http://localhost:8080,http://localhost:8888
+  file:
+    upload-dir: ${HOME}/tmpfile
+  security:
+    jwt:
+      token:
+        secret-key: 73573

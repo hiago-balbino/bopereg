@@ -1,18 +1,8 @@
-bopereg:
-  cors:
-    originPatterns: http://localhost:8080,https://thewes.com.br
-  file:
-    upload-dir: ${HOME}/tmpfile
-  security:
-    jwt:
-      token:
-        secret-key: ${JWT_SECRET}
-        expire-length: 3600000
-
-server:
-  port: 8080
-
 spring:
+  application:
+    name: bopereg
+  main:
+    banner-mode: off
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/bopereg?useTimezone=true&serverTimezone=UTC
@@ -33,9 +23,27 @@ spring:
 #      hibernate:
 #        dialect: org.hibernate.dialect.MySQLDialect
 
+server:
+  port: 8080
+
 springdoc:
   pathsToMatch:
     - /auth/**
     - /**/v1/**
   swagger-ui:
     use-root-path: true
+
+logging:
+  level:
+    root: info
+
+bopereg:
+  cors:
+    originPatterns: http://localhost:8080,https://thewes.com.br
+  file:
+    upload-dir: ${HOME}/tmpfile
+  security:
+    jwt:
+      token:
+        secret-key: ${JWT_SECRET}
+        expire-length: 3600000

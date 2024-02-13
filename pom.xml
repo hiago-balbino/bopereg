@@ -28,6 +28,7 @@
 		<lombok.version>1.18.30</lombok.version>
 		<model-mapper.version>3.2.0</model-mapper.version>
 		<failsafe-plugin.version>3.2.5</failsafe-plugin.version>
+		<logback-encoder.version>7.4</logback-encoder.version>
 	</properties>
 
 	<dependencies>
@@ -111,6 +112,11 @@
 			<version>${flyway.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>${logback-encoder.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

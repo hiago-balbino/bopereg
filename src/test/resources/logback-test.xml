@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+
+<configuration>
+    <import class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" />
+    <import class="ch.qos.logback.core.ConsoleAppender" />
+
+    <appender name="console-test" class="ConsoleAppender">
+        <encoder class ="PatternLayoutEncoder">
+            <pattern>%yellow(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %red(%-5level) %highlight(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="console-test"/>
+    </root>
+</configuration>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+
+<configuration>
+    <import class="ch.qos.logback.core.ConsoleAppender" />
+    <import class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder" />
+
+    <springProperty name="springAppName" scope="context" source="spring.application.name" />
+
+    <springProfile name="local">
+        <appender name="STDOUT-LOCAL" class="ConsoleAppender">
+            <encoder>
+                <pattern>%yellow(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %red(%-5level) %highlight(%logger{36}) %boldGreen([${springAppName:-NO_APP_NAME}]) - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="info">
+            <appender-ref ref="STDOUT-LOCAL"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!local">
+        <appender name="STDOUT-NON-LOCAL" class="ConsoleAppender">
+            <encoder class="LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp>
+                        <fieldName>timestamp</fieldName>
+                        <pattern>yyyy-MM-dd' 'HH:mm:ss.SSS</pattern>
+                    </timestamp>
+
+                    <pattern>
+                        <pattern>
+                            {
+                            "severity": "%level",
+                            "application": "${springAppName:-NO_APP_NAME}",
+                            "thread": "%thread",
+                            "logger": "%logger",
+                            "message": "%message",
+                            "exception": "%ex"
+                            }
+                        </pattern>
+                    </pattern>
+
+                    <stackTrace>
+                        <fieldName>exception</fieldName>
+                    </stackTrace>
+                </providers>
+            </encoder>
+        </appender>
+
+        <root level="info">
+            <appender-ref ref="STDOUT-NON-LOCAL"/>
+        </root>
+    </springProfile>
+</configuration>
