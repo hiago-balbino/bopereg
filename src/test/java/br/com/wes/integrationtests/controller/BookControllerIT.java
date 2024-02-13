@@ -218,6 +218,58 @@ public class BookControllerIT extends AbstractIT {
 
     @Test
     @Order(8)
+    @DisplayName("Should perform put request to update a book with success")
+    public void shouldPerformPutRequestToUpdateBookWithSuccess() throws JsonProcessingException {
+        var contentBodyFindAll = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
+                .when().get()
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+        BookVOITWrapper wrapper = mapper.readValue(contentBodyFindAll, BookVOITWrapper.class);
+        List<BookVOIT> books = wrapper.getEmbedded().getBooks();
+        assertFalse(books.isEmpty());
+
+        BookVOIT bookToUpdate = books.getFirst();
+        bookToUpdate.setPrice(99.9);
+        given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .body(bookToUpdate)
+                .when().put()
+                .then().statusCode(HttpStatus.OK.value());
+
+        var contentBodyFindById = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", bookToUpdate.getId())
+                .when().get("{id}")
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+        BookVOIT bookUpdated = mapper.readValue(contentBodyFindById, BookVOIT.class);
+
+        assertEquals(bookToUpdate.getPrice(), bookUpdated.getPrice());
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Should return invalid cors when performing put to update book with invalid origin")
+    public void shouldReturnInvalidCorsWhenPerformingPutToUpdateBookWithInvalidOrigin() {
+        var book = mockBookVOIntegrationTest();
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
+                .body(book)
+                .when().put()
+                .then().statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().asString();
+
+        assertNotNull(contentBody);
+        assertEquals("Invalid CORS request", contentBody);
+    }
+
+    @Test
+    @Order(10)
     @DisplayName("Should perform delete request to remove book with success")
     public void shouldPerformDeleteRequestToRemoveBookWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
@@ -248,7 +300,7 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(9)
+    @Order(11)
     @DisplayName("Should return invalid cors when performing delete to remove book with invalid origin")
     public void shouldReturnInvalidCorsWhenPerformingDeleteToRemoveBookWithInvalidOrigin() {
         var contentBody = given().spec(specification)

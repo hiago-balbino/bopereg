@@ -309,6 +309,58 @@ public class PersonControllerIT extends AbstractIT {
         assertEquals("Invalid CORS request", contentBody);
     }
 
+    @Test
+    @Order(12)
+    @DisplayName("Should perform put request to update a person with success")
+    public void shouldPerformPutRequestToUpdatePersonWithSuccess() throws JsonProcessingException {
+        var contentBodyFindAll = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
+                .when().get()
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+        PersonVOITWrapper wrapper = mapper.readValue(contentBodyFindAll, PersonVOITWrapper.class);
+        List<PersonVOIT> people = wrapper.getEmbedded().getPeople();
+        assertFalse(people.isEmpty());
+
+        PersonVOIT personToUpdate = people.getFirst();
+        personToUpdate.setFirstName("Updated Person");
+        given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .body(personToUpdate)
+                .when().put()
+                .then().statusCode(HttpStatus.OK.value());
+
+        var contentBodyFindById = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", personToUpdate.getId())
+                .when().get("{id}")
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+        PersonVOIT personUpdated = mapper.readValue(contentBodyFindById, PersonVOIT.class);
+
+        assertEquals(personToUpdate.getFirstName(), personUpdated.getFirstName());
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("Should return invalid cors when performing put to update person with invalid origin")
+    public void shouldReturnInvalidCorsWhenPerformingPutToUpdatePersonWithInvalidOrigin() {
+        PersonVOIT person = mockPersonVOIntegrationTest();
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
+                .body(person)
+                .when().put()
+                .then().statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().asString();
+
+        assertNotNull(contentBody);
+        assertEquals("Invalid CORS request", contentBody);
+    }
+
     private PersonVOIT mockPersonVOIntegrationTest() {
         PersonVOIT person = new PersonVOIT();
         person.setFirstName("Wes");
