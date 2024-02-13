@@ -8,6 +8,8 @@ import br.com.wes.model.Person;
 import br.com.wes.repository.PersonRepository;
 import br.com.wes.vo.v1.PersonVO;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -17,27 +19,21 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class PersonService {
 
-    private final Logger logger = Logger.getLogger(PersonService.class.getName());
     private final PersonRepository personRepository;
     private final ObjectModelMapper mapper;
     private final PagedResourcesAssembler<PersonVO> assembler;
 
-    public PersonService(PersonRepository personRepository, ObjectModelMapper mapper, PagedResourcesAssembler<PersonVO> assembler) {
-        this.personRepository = personRepository;
-        this.mapper = mapper;
-        this.assembler = assembler;
-    }
-
     public PersonVO create(PersonVO person) {
-        logger.info("Creating one person");
+        log.info("Creating one person");
         if (Objects.isNull(person)) throw new RequiredObjectIsNullException();
 
         var personToSave = mapper.map(person, Person.class);
@@ -47,7 +43,7 @@ public class PersonService {
     }
 
     public PersonVO update(PersonVO person) {
-        logger.info("Updating one person");
+        log.info("Updating one person");
         if (Objects.isNull(person)) throw new RequiredObjectIsNullException();
 
         var personToUpdate = personRepository.findById(person.getKey())
@@ -63,7 +59,7 @@ public class PersonService {
 
     @Transactional
     public PersonVO disablePerson(Long id) {
-        logger.info("Disabling one person");
+        log.info("Disabling one person");
 
         personRepository.disablePerson(id);
         var person = personRepository.findById(id)
@@ -73,7 +69,7 @@ public class PersonService {
     }
 
     public void delete(Long id) {
-        logger.info("Deleting one person");
+        log.info("Deleting one person");
 
         var personToDelete = personRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
@@ -82,7 +78,7 @@ public class PersonService {
     }
 
     public PersonVO findById(Long id) {
-        logger.info("Finding one person");
+        log.info("Finding one person");
 
         var person = personRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
@@ -91,7 +87,7 @@ public class PersonService {
     }
 
     public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
-        logger.info("Finding all people");
+        log.info("Finding all people");
 
         Page<PersonVO> people = personRepository
                 .findAll(pageable)
@@ -105,7 +101,7 @@ public class PersonService {
     }
 
     public PagedModel<EntityModel<PersonVO>> findPeopleByName(String firstName, Pageable pageable) {
-        logger.info("Finding people by first name");
+        log.info("Finding people by first name");
 
         Page<PersonVO> people = personRepository
                 .findPeopleByName(firstName, pageable)

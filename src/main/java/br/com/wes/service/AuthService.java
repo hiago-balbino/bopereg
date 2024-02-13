@@ -4,34 +4,28 @@ import br.com.wes.repository.UserRepository;
 import br.com.wes.security.jwt.JwtTokenProvider;
 import br.com.wes.vo.v1.security.AccountCredentialsVO;
 import br.com.wes.vo.v1.security.TokenVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class AuthService {
 
-    private static final Logger logger = Logger.getLogger(AuthService.class.getName());
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
 
-
-    public AuthService(JwtTokenProvider tokenProvider, AuthenticationManager authenticationManager, UserRepository userRepository) {
-        this.tokenProvider = tokenProvider;
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-    }
-
     public ResponseEntity<?> signin(AccountCredentialsVO credentials) {
-        logger.info("Authenticating user");
+        log.info("Authenticating user");
 
         try {
             var username = credentials.getUsername();
@@ -43,7 +37,7 @@ public class AuthService {
             if (Objects.nonNull(user)) {
                 tokenResponse = tokenProvider.createAccessToken(username, user.getRoles());
             } else {
-                throw new UsernameNotFoundException("Username " + username + " not found");
+                throw new UsernameNotFoundException("Username %s not found".formatted(username));
             }
 
             return ResponseEntity.ok(tokenResponse);
@@ -53,7 +47,7 @@ public class AuthService {
     }
 
     public ResponseEntity<?> refreshToken(String username, String refreshToken) {
-        logger.info("Refreshing token");
+        log.info("Refreshing token");
 
         var tokenResponse = new TokenVO();
         var user = userRepository.findByUsername(username);
@@ -61,7 +55,7 @@ public class AuthService {
         if (Objects.nonNull(user)) {
             tokenResponse = tokenProvider.refreshToken(refreshToken);
         } else {
-            throw new UsernameNotFoundException("Username " + username + " not found");
+            throw new UsernameNotFoundException("Username %s not found".formatted(username));
         }
 
         return ResponseEntity.ok(tokenResponse);

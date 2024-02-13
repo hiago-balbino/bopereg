@@ -3,6 +3,7 @@ package br.com.wes.service;
 import br.com.wes.config.FileStorageConfig;
 import br.com.wes.exception.FileNotFoundException;
 import br.com.wes.exception.FileStorageException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.logging.Logger;
 
+@Slf4j
 @Service
 public class FileStorageService {
 
-    private final Logger logger = Logger.getLogger(FileStorageService.class.getName());
     private final Path fileStorageLocation;
 
     public FileStorageService(FileStorageConfig fileStorageConfig) {
@@ -32,7 +32,7 @@ public class FileStorageService {
     }
 
     public String storeFile(MultipartFile file) {
-        logger.info("Storing file to disk");
+        log.info("Storing file to disk");
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null) {
@@ -46,12 +46,12 @@ public class FileStorageService {
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return filename;
         } catch (Exception e) {
-            throw new FileStorageException("Could not store file " + filename + ". Please try again", e);
+            throw new FileStorageException("Could not store file %s. Please try again".formatted(filename), e);
         }
     }
 
     public Resource loadFileAsResource(String filename) {
-        logger.info("Reading a file from the disk");
+        log.info("Reading a file from the disk");
 
         try {
             Path filePath = this.fileStorageLocation.resolve(filename).normalize();
