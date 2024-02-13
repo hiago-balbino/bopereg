@@ -308,3 +308,21 @@ curl --request GET \
   --header 'Authorization: Bearer <token>' \
   --header 'Accept: application/octet-stream' >> <filename>
 ```
+
+## Generate encoded password
+If you want to create a new encoded password you can use the code below.
+
+```java
+private static void generatePassword() {
+    Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder("", 8, 185000, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
+
+    Map<String, PasswordEncoder> encoders = new HashMap<>();
+    encoders.put("pbkdf2", pbkdf2PasswordEncoder);
+
+    DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
+    passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2PasswordEncoder);
+
+    String encoded = passwordEncoder.encode("");
+    System.out.printf(encoded);
+}
+```
