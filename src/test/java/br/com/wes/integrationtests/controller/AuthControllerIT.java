@@ -4,10 +4,7 @@ import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
 import br.com.wes.vo.v1.security.AccountCredentialsVO;
 import br.com.wes.vo.v1.security.TokenVO;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +18,7 @@ public class AuthControllerIT extends AbstractIT {
 
     @Test
     @Order(0)
+    @DisplayName("Should return forbidden when user not authorized to signin")
     public void shouldReturnForbiddenWhenUserNotAuthorizedToSignin() {
         var credentials = new AccountCredentialsVO();
 
@@ -34,6 +32,7 @@ public class AuthControllerIT extends AbstractIT {
 
     @Test
     @Order(1)
+    @DisplayName("Should signin user with success")
     public void shouldSigninUserWithSuccess() {
         var username = "usertest";
         var password = "test123";
@@ -53,6 +52,7 @@ public class AuthControllerIT extends AbstractIT {
 
     @Test
     @Order(2)
+    @DisplayName("Should refresh user token with success")
     public void shouldRefreshUserTokenWithSuccess() {
         var username = "usertest";
         var password = "test123";

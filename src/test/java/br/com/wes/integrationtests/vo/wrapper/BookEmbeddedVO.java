@@ -2,12 +2,19 @@ package br.com.wes.integrationtests.vo.wrapper;
 
 import br.com.wes.integrationtests.vo.BookVOIT;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode
 public class BookEmbeddedVO implements Serializable {
 
     @Serial
@@ -16,27 +23,4 @@ public class BookEmbeddedVO implements Serializable {
     @JsonProperty("bookVOList")
     private List<BookVOIT> books;
 
-    public BookEmbeddedVO() {
-    }
-
-    public List<BookVOIT> getBooks() {
-        return books;
-    }
-
-    public void setBooks(List<BookVOIT> books) {
-        this.books = books;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BookEmbeddedVO that = (BookEmbeddedVO) o;
-        return Objects.equals(books, that.books);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(books);
-    }
 }

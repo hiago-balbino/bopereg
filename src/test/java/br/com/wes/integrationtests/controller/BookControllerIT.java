@@ -43,22 +43,7 @@ public class BookControllerIT extends AbstractIT {
 
     @Test
     @Order(0)
-    public void shouldReturnForbiddenWhenTryToPerformBookRequestAndUserNotAuthorized() {
-        var specificationWithoutToken = new RequestSpecBuilder()
-                .setPort(TestConstants.SERVER_PORT).setBasePath("/api/book/v1")
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-        given()
-                .spec(specificationWithoutToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get()
-                .then().statusCode(HttpStatus.FORBIDDEN.value());
-    }
-
-    @Test
-    @Order(1)
+    @DisplayName("Should authorize user to perform person requests on tests")
     public void shouldAuthorizeUserToPerformPersonRequestsOnTests() {
         var username = "usertest";
         var password = "test123";
@@ -82,7 +67,25 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
+    @Order(1)
+    @DisplayName("Should return forbidden when try to perform book request and user not authorized")
+    public void shouldReturnForbiddenWhenTryToPerformBookRequestAndUserNotAuthorized() {
+        var specificationWithoutToken = new RequestSpecBuilder()
+                .setPort(TestConstants.SERVER_PORT).setBasePath("/api/book/v1")
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        given()
+                .spec(specificationWithoutToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get()
+                .then().statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     @Order(2)
+    @DisplayName("Should perform post request to book with success")
     public void shouldPerformPostRequestToBookWithSuccess() throws JsonProcessingException {
         var book = mockBookVOIntegrationTest();
         var contentBody = given().spec(specification)
@@ -110,6 +113,7 @@ public class BookControllerIT extends AbstractIT {
 
     @Test
     @Order(3)
+    @DisplayName("Should return invalid cors when performing post to book with invalid origin")
     public void shouldReturnInvalidCorsWhenPerformingPostToBookWithInvalidOrigin() {
         var book = mockBookVOIntegrationTest();
         var contentBody = given().spec(specification)
@@ -126,6 +130,7 @@ public class BookControllerIT extends AbstractIT {
 
     @Test
     @Order(4)
+    @DisplayName("Should perform get request to find book with success")
     public void shouldPerformGetRequestToFindBookWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -159,6 +164,7 @@ public class BookControllerIT extends AbstractIT {
 
     @Test
     @Order(5)
+    @DisplayName("Should return invalid cors when performing get to find book with invalid origin")
     public void shouldReturnInvalidCorsWhenPerformingGetToFindBookWithInvalidOrigin() {
         var contentBody = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -174,6 +180,45 @@ public class BookControllerIT extends AbstractIT {
 
     @Test
     @Order(6)
+    @DisplayName("Should return books with success when find books by title")
+    public void shouldReturnBooksWithSuccessWhenFindByTitle() throws JsonProcessingException {
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
+                .pathParam("title", "legacy code")
+                .queryParams("page", 0, "size", 10, "direction", "asc")
+                .when().get("/findBooksByTitle/{title}")
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().asString();
+
+        BookVOITWrapper wrapper = mapper.readValue(contentBody, BookVOITWrapper.class);
+        var books = wrapper.getEmbedded().getBooks();
+        assertFalse(books.isEmpty());
+
+        var person = books.getFirst();
+        assertEquals("Working effectively with legacy code", person.getTitle());
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Should return invalid cors when find books by title with invalid origin")
+    public void shouldReturnInvalidCorsWhenFindBooksByTitleWithInvalidOrigin() {
+        var contentBody = given().spec(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
+                .pathParam("title", "legacy code")
+                .queryParams("page", 0, "size", 10, "direction", "asc")
+                .when().get("/findBooksByTitle/{title}")
+                .then().statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().asString();
+
+        assertNotNull(contentBody);
+        assertEquals("Invalid CORS request", contentBody);
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Should perform delete request to remove book with success")
     public void shouldPerformDeleteRequestToRemoveBookWithSuccess() throws JsonProcessingException {
         var contentBodyFindAll = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -203,49 +248,14 @@ public class BookControllerIT extends AbstractIT {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
+    @DisplayName("Should return invalid cors when performing delete to remove book with invalid origin")
     public void shouldReturnInvalidCorsWhenPerformingDeleteToRemoveBookWithInvalidOrigin() {
         var contentBody = given().spec(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .pathParam("id", 1)
                 .when().delete("{id}")
-                .then().statusCode(HttpStatus.FORBIDDEN.value())
-                .extract().body().asString();
-
-        assertNotNull(contentBody);
-        assertEquals("Invalid CORS request", contentBody);
-    }
-
-    @Test
-    @Order(8)
-    public void shouldReturnBooksWithSuccessWhenFindByTitle() throws JsonProcessingException {
-        var contentBody = given().spec(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
-                .pathParam("title", "legacy code")
-                .queryParams("page", 0, "size", 10, "direction", "asc")
-                .when().get("/findBooksByTitle/{title}")
-                .then().statusCode(HttpStatus.OK.value())
-                .extract().body().asString();
-
-        BookVOITWrapper wrapper = mapper.readValue(contentBody, BookVOITWrapper.class);
-        var books = wrapper.getEmbedded().getBooks();
-        assertFalse(books.isEmpty());
-
-        var person = books.getFirst();
-        assertEquals("Working effectively with legacy code", person.getTitle());
-    }
-
-    @Test
-    @Order(9)
-    public void shouldReturnInvalidCorsWhenFindBooksByTitleWithInvalidOrigin() {
-        var contentBody = given().spec(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
-                .pathParam("title", "legacy code")
-                .queryParams("page", 0, "size", 10, "direction", "asc")
-                .when().get("/findBooksByTitle/{title}")
                 .then().statusCode(HttpStatus.FORBIDDEN.value())
                 .extract().body().asString();
 

@@ -9,6 +9,8 @@ import br.com.wes.repository.BookRepository;
 import br.com.wes.util.mock.BookMock;
 import br.com.wes.vo.v1.BookVO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,264 +51,293 @@ class BookServiceTest {
         input = new BookMock();
     }
 
-    @Test
-    public void shouldCreateBookWithSuccess() {
-        BookVO bookVOMock = input.mockBookVO();
-        Book bookMock = input.mockBookEntity();
-        when(mapper.map(bookVOMock, Book.class)).thenReturn(bookMock);
+    @Nested
+    class CreateBookTest {
 
-        Book bookPersisted = input.mockBookEntity(1);
-        when(bookRepository.save(bookMock)).thenReturn(bookPersisted);
+        @Test
+        @DisplayName("Should create book with success")
+        public void shouldCreateBookWithSuccess() {
+            BookVO bookVOMock = input.mockBookVO();
+            Book bookMock = input.mockBookEntity();
+            when(mapper.map(bookVOMock, Book.class)).thenReturn(bookMock);
 
-        BookVO bookVOPersisted = input.mockBookVO(1);
-        when(mapper.map(bookPersisted, BookVO.class)).thenReturn(bookVOPersisted);
+            Book bookPersisted = input.mockBookEntity(1);
+            when(bookRepository.save(bookMock)).thenReturn(bookPersisted);
 
-        BookVO bookVO = bookService.create(bookVOMock);
+            BookVO bookVOPersisted = input.mockBookVO(1);
+            when(mapper.map(bookPersisted, BookVO.class)).thenReturn(bookVOPersisted);
 
-        assertNotNull(bookVO);
-        assertNotNull(bookVO.getKey());
-        assertNotNull(bookVO.getLinks());
-        assertTrue(bookVO.toString().contains("</api/book/v1/1>;rel=\"self\""));
-        assertEquals("Author1", bookVO.getAuthor());
-        assertEquals("Title1", bookVO.getTitle());
-        assertEquals(2L, bookVO.getPrice());
-        assertEquals(BookMock.DEFAULT_DATE, bookVO.getLaunchDate());
+            BookVO bookVO = bookService.create(bookVOMock);
+
+            assertNotNull(bookVO);
+            assertNotNull(bookVO.getKey());
+            assertNotNull(bookVO.getLinks());
+            assertTrue(bookVO.toString().contains("</api/book/v1/1>;rel=\"self\""));
+            assertEquals("Author1", bookVO.getAuthor());
+            assertEquals("Title1", bookVO.getTitle());
+            assertEquals(2L, bookVO.getPrice());
+            assertEquals(BookMock.DEFAULT_DATE, bookVO.getLaunchDate());
+        }
+
+        @Test
+        @DisplayName("Should throw exception when creating book with null object")
+        public void shouldThrowExceptionWhenCreatingBookWithNullObject() {
+            RequiredObjectIsNullException exception = assertThrows(RequiredObjectIsNullException.class, () -> {
+                bookService.create(null);
+            });
+
+            String expectedMessage = "It is not allowed to persist a null object";
+            String actualMessage = exception.getMessage();
+            assertEquals(expectedMessage, actualMessage);
+        }
     }
 
-    @Test
-    public void shouldThrowExceptionWhenCreatingBookWithNullObject() {
-        RequiredObjectIsNullException exception = assertThrows(RequiredObjectIsNullException.class, () -> {
-            bookService.create(null);
-        });
+    @Nested
+    class UpdateBookTest {
 
-        String expectedMessage = "It is not allowed to persist a null object";
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
+        @Test
+        @DisplayName("Should update book with success")
+        public void shouldUpdateBookWithSuccess() {
+            BookVO bookVOMock = input.mockBookVO(1);
+            Book bookMock = input.mockBookEntity(1);
+            when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.of(bookMock));
+            when(bookRepository.save(bookMock)).thenReturn(bookMock);
+            when(mapper.map(bookMock, BookVO.class)).thenReturn(bookVOMock);
+
+            BookVO bookVO = bookService.update(bookVOMock);
+
+            assertNotNull(bookVO);
+            assertNotNull(bookVO.getKey());
+            assertNotNull(bookVO.getLinks());
+            assertTrue(bookVO.toString().contains("</api/book/v1/1>;rel=\"self\""));
+            assertEquals("Author1", bookVO.getAuthor());
+            assertEquals("Title1", bookVO.getTitle());
+            assertEquals(2L, bookVO.getPrice());
+            assertEquals(BookMock.DEFAULT_DATE, bookVO.getLaunchDate());
+        }
+
+        @Test
+        @DisplayName("Should throw exception when updating book with null object")
+        public void shouldThrowExceptionWhenUpdatingBookWithNullObject() {
+            RequiredObjectIsNullException exception = assertThrows(RequiredObjectIsNullException.class, () -> {
+                bookService.update(null);
+            });
+
+            String expectedMessage = "It is not allowed to persist a null object";
+            String actualMessage = exception.getMessage();
+            assertEquals(expectedMessage, actualMessage);
+        }
+
+        @Test
+        @DisplayName("Should throw exception when trying update book with non-existent object")
+        public void shouldThrowExceptionWhenTryingUpdateBookWithNonExistentObject() {
+            BookVO bookVOMock = input.mockBookVO(1);
+            when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
+
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+                bookService.update(bookVOMock);
+            });
+
+            String expectedMessage = "No records found for this identifier";
+            String actualMessage = exception.getMessage();
+            assertEquals(expectedMessage, actualMessage);
+        }
     }
 
-    @Test
-    public void shouldUpdateBookWithSuccess() {
-        BookVO bookVOMock = input.mockBookVO(1);
-        Book bookMock = input.mockBookEntity(1);
-        when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.of(bookMock));
-        when(bookRepository.save(bookMock)).thenReturn(bookMock);
-        when(mapper.map(bookMock, BookVO.class)).thenReturn(bookVOMock);
+    @Nested
+    class DeleteBookTest {
 
-        BookVO bookVO = bookService.update(bookVOMock);
+        @Test
+        @DisplayName("Should delete book with success")
+        public void shouldDeleteBookWithSuccess() {
+            Book bookMock = input.mockBookEntity(1);
+            when(bookRepository.findById(bookMock.getId())).thenReturn(Optional.of(bookMock));
 
-        assertNotNull(bookVO);
-        assertNotNull(bookVO.getKey());
-        assertNotNull(bookVO.getLinks());
-        assertTrue(bookVO.toString().contains("</api/book/v1/1>;rel=\"self\""));
-        assertEquals("Author1", bookVO.getAuthor());
-        assertEquals("Title1", bookVO.getTitle());
-        assertEquals(2L, bookVO.getPrice());
-        assertEquals(BookMock.DEFAULT_DATE, bookVO.getLaunchDate());
+            bookService.delete(bookMock.getId());
+
+            verify(bookRepository, times(1)).delete(bookMock);
+        }
+
+        @Test
+        @DisplayName("Should throw exception when trying delete non-existent book")
+        public void shouldThrowExceptionWhenTryingDeleteNonExistentBook() {
+            BookVO bookVOMock = input.mockBookVO(1);
+            when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
+
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+                bookService.delete(bookVOMock.getKey());
+            });
+
+            String expectedMessage = "No records found for this identifier";
+            String actualMessage = exception.getMessage();
+            assertEquals(expectedMessage, actualMessage);
+        }
     }
 
-    @Test
-    public void shouldThrowExceptionWhenUpdatingBookWithNullObject() {
-        RequiredObjectIsNullException exception = assertThrows(RequiredObjectIsNullException.class, () -> {
-            bookService.update(null);
-        });
+    @Nested
+    class FetchBookTest {
 
-        String expectedMessage = "It is not allowed to persist a null object";
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
+        @Test
+        @DisplayName("Should return book by id with success")
+        public void shouldReturnBookByIdWithSuccess() {
+            BookVO bookVOMock = input.mockBookVO(2);
+            Book bookMock = input.mockBookEntity(2);
+            when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.of(bookMock));
+            when(mapper.map(bookMock, BookVO.class)).thenReturn(bookVOMock);
 
-    @Test
-    public void shouldThrowExceptionWhenTryingUpdateBookWithNonExistentObject() {
-        BookVO bookVOMock = input.mockBookVO(1);
-        when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
+            BookVO bookVO = bookService.findById(bookVOMock.getKey());
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            bookService.update(bookVOMock);
-        });
+            assertNotNull(bookVO);
+            assertNotNull(bookVO.getKey());
+            assertNotNull(bookVO.getLinks());
+            assertTrue(bookVO.toString().contains("</api/book/v1/2>;rel=\"self\""));
+            assertEquals("Author2", bookVO.getAuthor());
+            assertEquals("Title2", bookVO.getTitle());
+            assertEquals(4L, bookVO.getPrice());
+            assertEquals(BookMock.DEFAULT_DATE, bookVO.getLaunchDate());
+        }
 
-        String expectedMessage = "No records found for this identifier";
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
+        @Test
+        @DisplayName("Should throw exception when trying find non-existent book")
+        public void shouldThrowExceptionWhenTryingFindNonExistentBook() {
+            BookVO bookVOMock = input.mockBookVO();
+            when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
 
-    @Test
-    public void shouldDeleteBookWithSuccess() {
-        Book bookMock = input.mockBookEntity(1);
-        when(bookRepository.findById(bookMock.getId())).thenReturn(Optional.of(bookMock));
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+                bookService.findById(bookVOMock.getKey());
+            });
 
-        bookService.delete(bookMock.getId());
+            String expectedMessage = "No records found for this identifier";
+            String actualMessage = exception.getMessage();
+            assertEquals(expectedMessage, actualMessage);
+        }
 
-        verify(bookRepository, times(1)).delete(bookMock);
-    }
+        @Test
+        @DisplayName("Should find all books with success")
+        public void shouldFindAllBooksWithSuccess() {
+            List<Book> books = input.mockBookEntities();
+            Page<Book> pageBooks = new PageImpl<>(books);
+            List<BookVO> booksVO = input.mockBookVOs();
+            Page<BookVO> pageBooksVO = new PageImpl<>(booksVO);
+            Collection<EntityModel<BookVO>> pagedModelContent = Arrays.asList(
+                    EntityModel.of(booksVO.get(0)),
+                    EntityModel.of(booksVO.get(1)),
+                    EntityModel.of(booksVO.get(2))
+            );
+            Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
+            Link link = linkTo(methodOn(BookController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
 
-    @Test
-    public void shouldThrowExceptionWhenTryingDeleteNonExistentBook() {
-        BookVO bookVOMock = input.mockBookVO(1);
-        when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
+            when(bookRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title")))).thenReturn(pageBooks);
+            when(mapper.map(books.get(0), BookVO.class)).thenReturn(booksVO.get(0));
+            when(mapper.map(books.get(1), BookVO.class)).thenReturn(booksVO.get(1));
+            when(mapper.map(books.get(2), BookVO.class)).thenReturn(booksVO.get(2));
+            when(assembler.toModel(eq(pageBooksVO), eq(link))).thenReturn(pagedModel);
+            when(pagedModel.getContent()).thenReturn(pagedModelContent);
+            when(pagedModel.getLinks()).thenReturn(Links.of(link));
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            bookService.delete(bookVOMock.getKey());
-        });
+            PagedModel<EntityModel<BookVO>> pagedBooks = bookService.findAll(pageable);
+            assertEquals("</api/book/v1?page=0&size=10&direction=asc>;rel=\"self\"", pagedBooks.getLinks().toString());
 
-        String expectedMessage = "No records found for this identifier";
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
+            List<EntityModel<BookVO>> allBooks = pagedBooks.getContent().stream().toList();
+            assertFalse(allBooks.isEmpty());
 
-    @Test
-    public void shouldReturnBookByIdWithSuccess() {
-        BookVO bookVOMock = input.mockBookVO(2);
-        Book bookMock = input.mockBookEntity(2);
-        when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.of(bookMock));
-        when(mapper.map(bookMock, BookVO.class)).thenReturn(bookVOMock);
+            BookVO firstBook = allBooks.getFirst().getContent();
+            assertNotNull(firstBook);
+            assertNotNull(firstBook.getKey());
+            assertNotNull(firstBook.getLinks());
+            assertTrue(firstBook.toString().contains("</api/book/v1/0>;rel=\"self\""));
+            assertEquals("Author0", firstBook.getAuthor());
+            assertEquals("Title0", firstBook.getTitle());
+            assertEquals(1L, firstBook.getPrice());
+            assertEquals(BookMock.DEFAULT_DATE, firstBook.getLaunchDate());
 
-        BookVO bookVO = bookService.findById(bookVOMock.getKey());
+            BookVO secondBook = allBooks.get(1).getContent();
+            assertNotNull(secondBook);
+            assertNotNull(secondBook.getKey());
+            assertNotNull(secondBook.getLinks());
+            assertTrue(secondBook.toString().contains("</api/book/v1/1>;rel=\"self\""));
+            assertEquals("Author1", secondBook.getAuthor());
+            assertEquals("Title1", secondBook.getTitle());
+            assertEquals(2L, secondBook.getPrice());
+            assertEquals(BookMock.DEFAULT_DATE, secondBook.getLaunchDate());
 
-        assertNotNull(bookVO);
-        assertNotNull(bookVO.getKey());
-        assertNotNull(bookVO.getLinks());
-        assertTrue(bookVO.toString().contains("</api/book/v1/2>;rel=\"self\""));
-        assertEquals("Author2", bookVO.getAuthor());
-        assertEquals("Title2", bookVO.getTitle());
-        assertEquals(4L, bookVO.getPrice());
-        assertEquals(BookMock.DEFAULT_DATE, bookVO.getLaunchDate());
-    }
+            BookVO thirdBook = allBooks.get(2).getContent();
+            assertNotNull(thirdBook);
+            assertNotNull(thirdBook.getKey());
+            assertNotNull(thirdBook.getLinks());
+            assertTrue(thirdBook.toString().contains("</api/book/v1/2>;rel=\"self\""));
+            assertEquals("Author2", thirdBook.getAuthor());
+            assertEquals("Title2", thirdBook.getTitle());
+            assertEquals(4L, thirdBook.getPrice());
+            assertEquals(BookMock.DEFAULT_DATE, thirdBook.getLaunchDate());
+        }
 
-    @Test
-    public void shouldThrowExceptionWhenTryingFindNonExistentBook() {
-        BookVO bookVOMock = input.mockBookVO();
-        when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
+        @Test
+        @DisplayName("Should return empty result when does not have any book saved")
+        public void shouldReturnEmptyResultWhenDoesNotHaveAnyBookSaved() {
+            Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            bookService.findById(bookVOMock.getKey());
-        });
+            when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+            when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
+            when(pagedModel.getContent()).thenReturn(Collections.emptyList());
+            when(pagedModel.getLinks()).thenReturn(Links.NONE);
 
-        String expectedMessage = "No records found for this identifier";
-        String actualMessage = exception.getMessage();
-        assertEquals(expectedMessage, actualMessage);
-    }
+            PagedModel<EntityModel<BookVO>> allPeople = bookService.findAll(pageable);
 
-    @Test
-    public void shouldFindAllBooksWithSuccess() {
-        List<Book> books = input.mockBookEntities();
-        Page<Book> pageBooks = new PageImpl<>(books);
-        List<BookVO> booksVO = input.mockBookVOs();
-        Page<BookVO> pageBooksVO = new PageImpl<>(booksVO);
-        Collection<EntityModel<BookVO>> pagedModelContent = Arrays.asList(
-                EntityModel.of(booksVO.get(0)),
-                EntityModel.of(booksVO.get(1)),
-                EntityModel.of(booksVO.get(2))
-        );
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
-        Link link = linkTo(methodOn(BookController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+            assertTrue(allPeople.getContent().isEmpty());
+            assertTrue(allPeople.getLinks().isEmpty());
+        }
 
-        when(bookRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title")))).thenReturn(pageBooks);
-        when(mapper.map(books.get(0), BookVO.class)).thenReturn(booksVO.get(0));
-        when(mapper.map(books.get(1), BookVO.class)).thenReturn(booksVO.get(1));
-        when(mapper.map(books.get(2), BookVO.class)).thenReturn(booksVO.get(2));
-        when(assembler.toModel(eq(pageBooksVO), eq(link))).thenReturn(pagedModel);
-        when(pagedModel.getContent()).thenReturn(pagedModelContent);
-        when(pagedModel.getLinks()).thenReturn(Links.of(link));
+        @Test
+        @DisplayName("Should return books with success when find by title")
+        public void shouldReturnBooksWithSuccessWhenFindByTitle() {
+            List<Book> books = List.of(input.mockBookEntity());
+            Page<Book> pageBook = new PageImpl<>(books);
+            List<BookVO> booksVO = List.of(input.mockBookVO());
+            Page<BookVO> pageBooksVO = new PageImpl<>(booksVO);
+            Collection<EntityModel<BookVO>> pagedModelContent = List.of(EntityModel.of(booksVO.getFirst()));
+            Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
+            Link link = linkTo(methodOn(BookController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+            String title = "Title0";
 
-        PagedModel<EntityModel<BookVO>> pagedBooks = bookService.findAll(pageable);
-        assertEquals("</api/book/v1?page=0&size=10&direction=asc>;rel=\"self\"", pagedBooks.getLinks().toString());
+            when(bookRepository.findBooksByTitle(title, pageable)).thenReturn(pageBook);
+            when(mapper.map(books.getFirst(), BookVO.class)).thenReturn(booksVO.getFirst());
+            when(assembler.toModel(eq(pageBooksVO), eq(link))).thenReturn(pagedModel);
+            when(pagedModel.getContent()).thenReturn(pagedModelContent);
+            when(pagedModel.getLinks()).thenReturn(Links.of(link));
 
-        List<EntityModel<BookVO>> allBooks = pagedBooks.getContent().stream().toList();
-        assertFalse(allBooks.isEmpty());
+            PagedModel<EntityModel<BookVO>> pagedBooks = bookService.findBooksByTitle(title, pageable);
+            assertEquals("</api/book/v1?page=0&size=10&direction=asc>;rel=\"self\"", pagedBooks.getLinks().toString());
 
-        BookVO firstBook = allBooks.getFirst().getContent();
-        assertNotNull(firstBook);
-        assertNotNull(firstBook.getKey());
-        assertNotNull(firstBook.getLinks());
-        assertTrue(firstBook.toString().contains("</api/book/v1/0>;rel=\"self\""));
-        assertEquals("Author0", firstBook.getAuthor());
-        assertEquals("Title0", firstBook.getTitle());
-        assertEquals(1L, firstBook.getPrice());
-        assertEquals(BookMock.DEFAULT_DATE, firstBook.getLaunchDate());
+            List<EntityModel<BookVO>> allBooks = pagedBooks.getContent().stream().toList();
+            assertFalse(allBooks.isEmpty());
 
-        BookVO secondBook = allBooks.get(1).getContent();
-        assertNotNull(secondBook);
-        assertNotNull(secondBook.getKey());
-        assertNotNull(secondBook.getLinks());
-        assertTrue(secondBook.toString().contains("</api/book/v1/1>;rel=\"self\""));
-        assertEquals("Author1", secondBook.getAuthor());
-        assertEquals("Title1", secondBook.getTitle());
-        assertEquals(2L, secondBook.getPrice());
-        assertEquals(BookMock.DEFAULT_DATE, secondBook.getLaunchDate());
+            BookVO book = allBooks.getFirst().getContent();
+            assertNotNull(book);
+            assertNotNull(book.getKey());
+            assertNotNull(book.getLinks());
+            assertTrue(book.toString().contains("</api/book/v1/0>;rel=\"self\""));
+            assertEquals("Author0", book.getAuthor());
+            assertEquals("Title0", book.getTitle());
+            assertEquals(1L, book.getPrice());
+            assertEquals(BookMock.DEFAULT_DATE, book.getLaunchDate());
+        }
 
-        BookVO thirdBook = allBooks.get(2).getContent();
-        assertNotNull(thirdBook);
-        assertNotNull(thirdBook.getKey());
-        assertNotNull(thirdBook.getLinks());
-        assertTrue(thirdBook.toString().contains("</api/book/v1/2>;rel=\"self\""));
-        assertEquals("Author2", thirdBook.getAuthor());
-        assertEquals("Title2", thirdBook.getTitle());
-        assertEquals(4L, thirdBook.getPrice());
-        assertEquals(BookMock.DEFAULT_DATE, thirdBook.getLaunchDate());
-    }
+        @Test
+        @DisplayName("Should return empty result when does not have any book with title")
+        public void shouldReturnEmptyResultWhenDoesNotHaveAnyBookWithTitle() {
+            Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
+            String title = "Title0";
 
-    @Test
-    public void shouldReturnEmptyResultWhenDoesNotHaveAnyBookSaved() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
+            when(bookRepository.findBooksByTitle(title, pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+            when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
+            when(pagedModel.getContent()).thenReturn(Collections.emptyList());
+            when(pagedModel.getLinks()).thenReturn(Links.NONE);
 
-        when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
-        when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
-        when(pagedModel.getContent()).thenReturn(Collections.emptyList());
-        when(pagedModel.getLinks()).thenReturn(Links.NONE);
+            PagedModel<EntityModel<BookVO>> allBooks = bookService.findBooksByTitle(title, pageable);
 
-        PagedModel<EntityModel<BookVO>> allPeople = bookService.findAll(pageable);
-
-        assertTrue(allPeople.getContent().isEmpty());
-        assertTrue(allPeople.getLinks().isEmpty());
-    }
-
-    @Test
-    public void shouldReturnBooksWithSuccessWhenFindByTitle() {
-        List<Book> books = List.of(input.mockBookEntity());
-        Page<Book> pageBook = new PageImpl<>(books);
-        List<BookVO> booksVO = List.of(input.mockBookVO());
-        Page<BookVO> pageBooksVO = new PageImpl<>(booksVO);
-        Collection<EntityModel<BookVO>> pagedModelContent = List.of(EntityModel.of(booksVO.getFirst()));
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
-        Link link = linkTo(methodOn(BookController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
-        String title = "Title0";
-
-        when(bookRepository.findBooksByTitle(title, pageable)).thenReturn(pageBook);
-        when(mapper.map(books.getFirst(), BookVO.class)).thenReturn(booksVO.getFirst());
-        when(assembler.toModel(eq(pageBooksVO), eq(link))).thenReturn(pagedModel);
-        when(pagedModel.getContent()).thenReturn(pagedModelContent);
-        when(pagedModel.getLinks()).thenReturn(Links.of(link));
-
-        PagedModel<EntityModel<BookVO>> pagedBooks = bookService.findBooksByTitle(title, pageable);
-        assertEquals("</api/book/v1?page=0&size=10&direction=asc>;rel=\"self\"", pagedBooks.getLinks().toString());
-
-        List<EntityModel<BookVO>> allBooks = pagedBooks.getContent().stream().toList();
-        assertFalse(allBooks.isEmpty());
-
-        BookVO book = allBooks.getFirst().getContent();
-        assertNotNull(book);
-        assertNotNull(book.getKey());
-        assertNotNull(book.getLinks());
-        assertTrue(book.toString().contains("</api/book/v1/0>;rel=\"self\""));
-        assertEquals("Author0", book.getAuthor());
-        assertEquals("Title0", book.getTitle());
-        assertEquals(1L, book.getPrice());
-        assertEquals(BookMock.DEFAULT_DATE, book.getLaunchDate());
-    }
-
-    @Test
-    public void shouldReturnEmptyResultWhenDoesNotHaveAnyBookWithTitle() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));
-        String title = "Title0";
-
-        when(bookRepository.findBooksByTitle(title, pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
-        when(assembler.toModel(eq(new PageImpl<>(Collections.emptyList())), any(Link.class))).thenReturn(pagedModel);
-        when(pagedModel.getContent()).thenReturn(Collections.emptyList());
-        when(pagedModel.getLinks()).thenReturn(Links.NONE);
-
-        PagedModel<EntityModel<BookVO>> allBooks = bookService.findBooksByTitle(title, pageable);
-
-        assertTrue(allBooks.getContent().isEmpty());
-        assertTrue(allBooks.getLinks().isEmpty());
+            assertTrue(allBooks.getContent().isEmpty());
+            assertTrue(allBooks.getLinks().isEmpty());
+        }
     }
 }

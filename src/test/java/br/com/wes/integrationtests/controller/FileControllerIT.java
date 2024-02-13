@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FileControllerIT extends AbstractIT {
 
     private static RequestSpecification specification;
+
     private static ApplicationContext applicationContext;
 
     @Autowired
@@ -56,22 +57,7 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(0)
-    public void shouldReturnForbiddenWhenTryToPerformFileRequestAndUserNotAuthorized() {
-        var specificationWithoutToken = new RequestSpecBuilder()
-                .setPort(TestConstants.SERVER_PORT).setBasePath("/api/file/v1")
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
-        given()
-                .spec(specificationWithoutToken)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get()
-                .then().statusCode(HttpStatus.FORBIDDEN.value());
-    }
-
-    @Test
-    @Order(1)
+    @DisplayName("Should authorize user to perform file requests on tests")
     public void shouldAuthorizeUserToPerformFileUploadOnTests() {
         var username = "usertest";
         var password = "test123";
@@ -95,7 +81,25 @@ public class FileControllerIT extends AbstractIT {
     }
 
     @Test
+    @Order(1)
+    @DisplayName("Should return forbidden when try to perform file request and user not authorized")
+    public void shouldReturnForbiddenWhenTryToPerformFileRequestAndUserNotAuthorized() {
+        var specificationWithoutToken = new RequestSpecBuilder()
+                .setPort(TestConstants.SERVER_PORT).setBasePath("/api/file/v1")
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        given()
+                .spec(specificationWithoutToken)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get()
+                .then().statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
     @Order(2)
+    @DisplayName("Should upload file with success")
     public void shouldUploadFileWithSuccess() {
         UploadFileResponseVO fileResponse = given().spec(specification)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -113,7 +117,8 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(2)
-    public void shouldReturnErrorWhenUploadFileWithoutMultiPart() {
+    @DisplayName("Should return exception message when upload file without multipart")
+    public void shouldReturnExceptionMessageWhenUploadFileWithoutMultiPart() {
         String contentBody = given().spec(specification)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
@@ -126,6 +131,7 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(3)
+    @DisplayName("Should return invalid cors when performing file upload with invalid origin")
     public void shouldReturnInvalidCorsWhenPerformingFileUploadWithInvalidOrigin() {
         String contentBody = given().spec(specification)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -141,6 +147,7 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(4)
+    @DisplayName("Should upload many files with success")
     public void shouldUploadManyFilesWithSuccess() {
         List<UploadFileResponseVO> filesResponse = Arrays.stream(given().spec(specification)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -166,7 +173,8 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(5)
-    public void shouldReturnErrorWhenUploadManyFilesWithoutMultiPart() {
+    @DisplayName("Should return exception message when upload many files without multipart")
+    public void shouldReturnExceptionMessageWhenUploadManyFilesWithoutMultiPart() {
         String contentBody = given().spec(specification)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
@@ -179,6 +187,7 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(6)
+    @DisplayName("Should return invalid cors when performing many files upload with invalid origin")
     public void shouldReturnInvalidCorsWhenPerformingManyFilesUploadWithInvalidOrigin() {
         String contentBody = given().spec(specification)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -195,9 +204,9 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(7)
+    @DisplayName("Should download file with success")
     public void shouldDownloadFileWithSuccess() {
         byte[] fileContent = given().spec(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.VALID_ORIGIN)
                 .pathParam("filename", "file1.txt")
@@ -211,9 +220,9 @@ public class FileControllerIT extends AbstractIT {
 
     @Test
     @Order(8)
+    @DisplayName("Should return invalid cors when performing file download with invalid origin")
     public void shouldReturnInvalidCorsWhenPerformingFileDownloadWithInvalidOrigin() {
         String contentBody = given().spec(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_OCTET_STREAM_VALUE)
                 .header(TestConstants.HEADER_PARAM_ORIGIN, TestConstants.INVALID_ORIGIN)
                 .pathParam("filename", "file1.txt")

@@ -2,6 +2,7 @@ package br.com.wes.integrationtests.swagger;
 
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.integrationtests.TestConstants;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class SwaggerIT extends AbstractIT {
 
     @Test
+    @DisplayName("Should display swagger ui page")
     public void shouldDisplaySwaggerUiPage() {
         var content =
                 given()

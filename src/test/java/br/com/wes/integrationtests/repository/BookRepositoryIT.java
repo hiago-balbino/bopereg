@@ -3,6 +3,7 @@ package br.com.wes.integrationtests.repository;
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.model.Book;
 import br.com.wes.repository.BookRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -25,6 +26,7 @@ public class BookRepositoryIT extends AbstractIT {
     private BookRepository bookRepository;
 
     @Test
+    @DisplayName("Should return all books with success")
     public void shouldReturnAllBooksWithSuccess() {
         Pageable pageable = PageRequest.of(0, 6, Sort.by(Direction.ASC, "title"));
         List<Book> books = bookRepository.findBooksByTitle("legacy code", pageable).getContent();
@@ -39,6 +41,7 @@ public class BookRepositoryIT extends AbstractIT {
     }
 
     @Test
+    @DisplayName("Should return empty result when not found books by title")
     public void shouldReturnEmptyResultWhenNotFoundBooksByTitle() {
         Pageable pageable = PageRequest.of(0, 6, Sort.by(Direction.ASC, "title"));
         List<Book> books = bookRepository.findBooksByTitle("Unknown", pageable).getContent();

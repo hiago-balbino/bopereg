@@ -3,6 +3,7 @@ package br.com.wes.integrationtests.repository;
 import br.com.wes.integrationtests.AbstractIT;
 import br.com.wes.model.Person;
 import br.com.wes.repository.PersonRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -25,6 +26,7 @@ public class PersonRepositoryIT extends AbstractIT {
     private PersonRepository personRepository;
 
     @Test
+    @DisplayName("Should find people by name with success")
     public void shouldFindPeopleByNameWithSuccess() {
         Pageable pageable = PageRequest.of(0, 6, Sort.by(Direction.ASC, "firstName"));
         List<Person> people = personRepository.findPeopleByName("Ayr", pageable).getContent();
@@ -40,6 +42,7 @@ public class PersonRepositoryIT extends AbstractIT {
     }
 
     @Test
+    @DisplayName("Should return empty result when not found people by name")
     public void shouldReturnEmptyResultWhenNotFoundPeopleByName() {
         Pageable pageable = PageRequest.of(0, 6, Sort.by(Direction.ASC, "firstName"));
         List<Person> people = personRepository.findPeopleByName("Unknown", pageable).getContent();
@@ -47,6 +50,7 @@ public class PersonRepositoryIT extends AbstractIT {
     }
 
     @Test
+    @DisplayName("Should disable person with success")
     public void shouldDisablePersonWithSuccess() {
         personRepository.disablePerson(1L);
         Optional<Person> personOpt = personRepository.findById(1L);
