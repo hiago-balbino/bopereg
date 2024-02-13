@@ -5,38 +5,30 @@ import br.com.wes.vo.v1.BookVO;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class BookMock {
 
     public static final LocalDate DEFAULT_DATE = LocalDate.of(2023, Month.DECEMBER, 1);
 
-    public Book mockEntity() {
-        return mockEntity(0);
+    public Book mockBookEntity() {
+        return mockBookEntity(0);
     }
 
-    public BookVO mockVO() {
-        return mockVO(0);
+    public BookVO mockBookVO() {
+        return mockBookVO(0);
     }
 
-    public List<Book> mockEntities() {
-        List<Book> books = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            books.add(mockEntity(i));
-        }
-        return books;
+    public List<Book> mockBookEntities() {
+        return Stream.of(0, 1, 2).map(this::mockBookEntity).toList();
     }
 
-    public List<BookVO> mockVOs() {
-        List<BookVO> booksVO = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            booksVO.add(mockVO(i));
-        }
-        return booksVO;
+    public List<BookVO> mockBookVOs() {
+        return Stream.of(0, 1, 2).map(this::mockBookVO).toList();
     }
 
-    public Book mockEntity(Integer number) {
+    public Book mockBookEntity(Integer number) {
         Book book = new Book();
         book.setId(number.longValue());
         book.setAuthor("Author" + number);
@@ -46,7 +38,7 @@ public class BookMock {
         return book;
     }
 
-    public BookVO mockVO(Integer number) {
+    public BookVO mockBookVO(Integer number) {
         BookVO bookVO = new BookVO();
         bookVO.setKey(number.longValue());
         bookVO.setAuthor("Author" + number);

@@ -3,36 +3,28 @@ package br.com.wes.util.mock;
 import br.com.wes.model.Person;
 import br.com.wes.vo.v1.PersonVO;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PersonMock {
 
-    public Person mockEntity() {
-        return mockEntity(0);
+    public Person mockPersonEntity() {
+        return mockPersonEntity(0);
     }
 
-    public PersonVO mockVO() {
-        return mockVO(0);
+    public PersonVO mockPersonVO() {
+        return mockPersonVO(0);
     }
 
-    public List<Person> mockEntities() {
-        List<Person> people = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            people.add(mockEntity(i));
-        }
-        return people;
+    public List<Person> mockPersonEntities() {
+        return Stream.of(0, 1, 2).map(this::mockPersonEntity).toList();
     }
 
-    public List<PersonVO> mockVOs() {
-        List<PersonVO> peopleVO = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            peopleVO.add(mockVO(i));
-        }
-        return peopleVO;
+    public List<PersonVO> mockPersonVOs() {
+        return Stream.of(0, 1, 2).map(this::mockPersonVO).toList();
     }
 
-    public Person mockEntity(Integer number) {
+    public Person mockPersonEntity(Integer number) {
         Person person = new Person();
         person.setId(number.longValue());
         person.setFirstName("First Name Test" + number);
@@ -43,7 +35,7 @@ public class PersonMock {
         return person;
     }
 
-    public PersonVO mockVO(Integer number) {
+    public PersonVO mockPersonVO(Integer number) {
         PersonVO person = new PersonVO();
         person.setKey(number.longValue());
         person.setFirstName("First Name Test" + number);

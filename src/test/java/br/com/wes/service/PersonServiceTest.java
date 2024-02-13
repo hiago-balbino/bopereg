@@ -51,14 +51,14 @@ class PersonServiceTest {
 
     @Test
     public void shouldCreatePersonWithSuccess() {
-        PersonVO personVOMock = input.mockVO();
-        Person personMock = input.mockEntity();
+        PersonVO personVOMock = input.mockPersonVO();
+        Person personMock = input.mockPersonEntity();
         when(mapper.map(personVOMock, Person.class)).thenReturn(personMock);
 
-        Person personPersisted = input.mockEntity(1);
+        Person personPersisted = input.mockPersonEntity(1);
         when(personRepository.save(personMock)).thenReturn(personPersisted);
 
-        PersonVO personVOPersisted = input.mockVO(1);
+        PersonVO personVOPersisted = input.mockPersonVO(1);
         when(mapper.map(personPersisted, PersonVO.class)).thenReturn(personVOPersisted);
 
         PersonVO personVO = personService.create(personVOMock);
@@ -86,8 +86,8 @@ class PersonServiceTest {
 
     @Test
     public void shouldUpdatePersonWithSuccess() {
-        PersonVO personVOMock = input.mockVO(1);
-        Person personMock = input.mockEntity(1);
+        PersonVO personVOMock = input.mockPersonVO(1);
+        Person personMock = input.mockPersonEntity(1);
         when(personRepository.findById(personVOMock.getKey())).thenReturn(Optional.of(personMock));
         when(personRepository.save(personMock)).thenReturn(personMock);
         when(mapper.map(personMock, PersonVO.class)).thenReturn(personVOMock);
@@ -117,7 +117,7 @@ class PersonServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenTryingUpdatePersonWithNonExistentObject() {
-        PersonVO personVOMock = input.mockVO(1);
+        PersonVO personVOMock = input.mockPersonVO(1);
         when(personRepository.findById(personVOMock.getKey())).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
@@ -131,7 +131,7 @@ class PersonServiceTest {
 
     @Test
     public void shouldDeletePersonWithSuccess() {
-        Person personMock = input.mockEntity(1);
+        Person personMock = input.mockPersonEntity(1);
         when(personRepository.findById(personMock.getId())).thenReturn(Optional.of(personMock));
 
         personService.delete(personMock.getId());
@@ -154,10 +154,10 @@ class PersonServiceTest {
 
     @Test
     public void shouldFindPersonByIdWithSuccess() {
-        Person personMock = input.mockEntity(1);
+        Person personMock = input.mockPersonEntity(1);
         when(personRepository.findById(1L)).thenReturn(Optional.of(personMock));
 
-        PersonVO personVOMock = input.mockVO(1);
+        PersonVO personVOMock = input.mockPersonVO(1);
         when(mapper.map(personMock, PersonVO.class)).thenReturn(personVOMock);
 
         var person = personService.findById(1L);
@@ -187,9 +187,9 @@ class PersonServiceTest {
 
     @Test
     public void shouldFindAllPersonWithSuccess() {
-        List<Person> people = input.mockEntities();
+        List<Person> people = input.mockPersonEntities();
         Page<Person> pagePeople = new PageImpl<>(people);
-        List<PersonVO> peopleVO = input.mockVOs();
+        List<PersonVO> peopleVO = input.mockPersonVOs();
         Page<PersonVO> pagePeopleVO = new PageImpl<>(peopleVO);
         Collection<EntityModel<PersonVO>> pagedModelContent = Arrays.asList(
                 EntityModel.of(peopleVO.get(0)),
@@ -261,9 +261,9 @@ class PersonServiceTest {
 
     @Test
     public void shouldReturnPeopleWithSuccessWhenFindByFirstName() {
-        List<Person> people = List.of(input.mockEntity());
+        List<Person> people = List.of(input.mockPersonEntity());
         Page<Person> pagePeople = new PageImpl<>(people);
-        List<PersonVO> peopleVO = List.of(input.mockVO());
+        List<PersonVO> peopleVO = List.of(input.mockPersonVO());
         Page<PersonVO> pagePeopleVO = new PageImpl<>(peopleVO);
         Collection<EntityModel<PersonVO>> pagedModelContent = List.of(EntityModel.of(peopleVO.getFirst()));
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Direction.ASC, "firstName"));

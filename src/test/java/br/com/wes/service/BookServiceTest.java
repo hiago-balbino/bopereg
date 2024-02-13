@@ -51,14 +51,14 @@ class BookServiceTest {
 
     @Test
     public void shouldCreateBookWithSuccess() {
-        BookVO bookVOMock = input.mockVO();
-        Book bookMock = input.mockEntity();
+        BookVO bookVOMock = input.mockBookVO();
+        Book bookMock = input.mockBookEntity();
         when(mapper.map(bookVOMock, Book.class)).thenReturn(bookMock);
 
-        Book bookPersisted = input.mockEntity(1);
+        Book bookPersisted = input.mockBookEntity(1);
         when(bookRepository.save(bookMock)).thenReturn(bookPersisted);
 
-        BookVO bookVOPersisted = input.mockVO(1);
+        BookVO bookVOPersisted = input.mockBookVO(1);
         when(mapper.map(bookPersisted, BookVO.class)).thenReturn(bookVOPersisted);
 
         BookVO bookVO = bookService.create(bookVOMock);
@@ -86,8 +86,8 @@ class BookServiceTest {
 
     @Test
     public void shouldUpdateBookWithSuccess() {
-        BookVO bookVOMock = input.mockVO(1);
-        Book bookMock = input.mockEntity(1);
+        BookVO bookVOMock = input.mockBookVO(1);
+        Book bookMock = input.mockBookEntity(1);
         when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.of(bookMock));
         when(bookRepository.save(bookMock)).thenReturn(bookMock);
         when(mapper.map(bookMock, BookVO.class)).thenReturn(bookVOMock);
@@ -117,7 +117,7 @@ class BookServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenTryingUpdateBookWithNonExistentObject() {
-        BookVO bookVOMock = input.mockVO(1);
+        BookVO bookVOMock = input.mockBookVO(1);
         when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
@@ -131,7 +131,7 @@ class BookServiceTest {
 
     @Test
     public void shouldDeleteBookWithSuccess() {
-        Book bookMock = input.mockEntity(1);
+        Book bookMock = input.mockBookEntity(1);
         when(bookRepository.findById(bookMock.getId())).thenReturn(Optional.of(bookMock));
 
         bookService.delete(bookMock.getId());
@@ -141,7 +141,7 @@ class BookServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenTryingDeleteNonExistentBook() {
-        BookVO bookVOMock = input.mockVO(1);
+        BookVO bookVOMock = input.mockBookVO(1);
         when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
@@ -155,8 +155,8 @@ class BookServiceTest {
 
     @Test
     public void shouldReturnBookByIdWithSuccess() {
-        BookVO bookVOMock = input.mockVO(2);
-        Book bookMock = input.mockEntity(2);
+        BookVO bookVOMock = input.mockBookVO(2);
+        Book bookMock = input.mockBookEntity(2);
         when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.of(bookMock));
         when(mapper.map(bookMock, BookVO.class)).thenReturn(bookVOMock);
 
@@ -174,7 +174,7 @@ class BookServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenTryingFindNonExistentBook() {
-        BookVO bookVOMock = input.mockVO();
+        BookVO bookVOMock = input.mockBookVO();
         when(bookRepository.findById(bookVOMock.getKey())).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
@@ -188,9 +188,9 @@ class BookServiceTest {
 
     @Test
     public void shouldFindAllBooksWithSuccess() {
-        List<Book> books = input.mockEntities();
+        List<Book> books = input.mockBookEntities();
         Page<Book> pageBooks = new PageImpl<>(books);
-        List<BookVO> booksVO = input.mockVOs();
+        List<BookVO> booksVO = input.mockBookVOs();
         Page<BookVO> pageBooksVO = new PageImpl<>(booksVO);
         Collection<EntityModel<BookVO>> pagedModelContent = Arrays.asList(
                 EntityModel.of(booksVO.get(0)),
@@ -262,9 +262,9 @@ class BookServiceTest {
 
     @Test
     public void shouldReturnBooksWithSuccessWhenFindByTitle() {
-        List<Book> books = List.of(input.mockEntity());
+        List<Book> books = List.of(input.mockBookEntity());
         Page<Book> pageBook = new PageImpl<>(books);
-        List<BookVO> booksVO = List.of(input.mockVO());
+        List<BookVO> booksVO = List.of(input.mockBookVO());
         Page<BookVO> pageBooksVO = new PageImpl<>(booksVO);
         Collection<EntityModel<BookVO>> pagedModelContent = List.of(EntityModel.of(booksVO.getFirst()));
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "title"));

@@ -1,6 +1,5 @@
 package br.com.wes.mapper;
 
-import br.com.wes.mapper.ObjectModelMapper;
 import br.com.wes.model.Person;
 import br.com.wes.util.mock.PersonMock;
 import br.com.wes.vo.v1.PersonVO;
@@ -33,8 +32,8 @@ class ObjectModelMapperTest {
 
     @Test
     public void mapEntityToValueObject() {
-        Person personMock = input.mockEntity();
-        PersonVO personVOMock = input.mockVO();
+        Person personMock = input.mockPersonEntity();
+        PersonVO personVOMock = input.mockPersonVO();
         when(modelMapper.map(personMock, PersonVO.class)).thenReturn(personVOMock);
 
         PersonVO personVO = objectModelMapper.map(personMock, PersonVO.class);
@@ -48,8 +47,8 @@ class ObjectModelMapperTest {
 
     @Test
     public void mapEntitiesToValueObjects() {
-        List<Person> peopleMock = input.mockEntities();
-        List<PersonVO> peopleVOMock = input.mockVOs();
+        List<Person> peopleMock = input.mockPersonEntities();
+        List<PersonVO> peopleVOMock = input.mockPersonVOs();
         when(modelMapper.map(peopleMock.get(0), PersonVO.class)).thenReturn(peopleVOMock.get(0));
         when(modelMapper.map(peopleMock.get(1), PersonVO.class)).thenReturn(peopleVOMock.get(1));
         when(modelMapper.map(peopleMock.get(2), PersonVO.class)).thenReturn(peopleVOMock.get(2));
@@ -80,8 +79,8 @@ class ObjectModelMapperTest {
 
     @Test
     public void mapValueObjectToEntity() {
-        PersonVO personVOMock = input.mockVO();
-        Person personMock = input.mockEntity();
+        PersonVO personVOMock = input.mockPersonVO();
+        Person personMock = input.mockPersonEntity();
         when(modelMapper.map(personVOMock, Person.class)).thenReturn(personMock);
 
         Person person = objectModelMapper.map(personVOMock, Person.class);
@@ -94,8 +93,8 @@ class ObjectModelMapperTest {
 
     @Test
     public void mapValueObjectsToEntities() {
-        List<PersonVO> peopleVOMock = input.mockVOs();
-        List<Person> peopleMock = input.mockEntities();
+        List<PersonVO> peopleVOMock = input.mockPersonVOs();
+        List<Person> peopleMock = input.mockPersonEntities();
         when(modelMapper.map(peopleVOMock.get(0), Person.class)).thenReturn(peopleMock.get(0));
         when(modelMapper.map(peopleVOMock.get(1), Person.class)).thenReturn(peopleMock.get(1));
         when(modelMapper.map(peopleVOMock.get(2), Person.class)).thenReturn(peopleMock.get(2));
